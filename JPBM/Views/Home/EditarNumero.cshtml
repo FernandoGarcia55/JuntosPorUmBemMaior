@@ -1,0 +1,41 @@
+﻿@model RifaViewModel
+@{
+    ViewData["Title"] = "EditarNumero";
+    var res = ViewBag.res;
+    var r = ViewBag.r;
+    var listaUsuarios = ViewBag.listaUsuarios as List<JPBM.Entidades.Usuarios>;
+}
+
+<h2>EditarNumero</h2>
+
+<input type="hidden" id="res" name="res" value="@res" />
+<input type="hidden" id="r" name="r" value="@r" />
+<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="EditarNumero">
+    <div class="text-center">
+        <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
+    </div>
+
+
+    <div>
+        <label>Digite os numeros separados por virgula: exp: 1,45,32,58 </label>
+        <input type="text" id="numero" asp-for="Numeros" />
+        <input type="submit" value="enviar" />
+    </div>
+
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var resposta = document.getElementById("res").value;
+        var respostaa = document.getElementById("r").value;
+
+
+        if (resposta == 1) {
+            alert("Numeros não vendidos: " + respostaa);
+        } else if (resposta == 2) {
+            alert("Informe apenas numeros no campo de numeros.");
+        }
+    });
+
+</script> 

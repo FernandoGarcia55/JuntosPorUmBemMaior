@@ -228,6 +228,82 @@ namespace JPBM.Controllers
             return View();
         }
 
+        public IActionResult EditarNumero()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult EditarNumero(RifaViewModel rifa)
+        {
+            var res = 0;
+
+            try
+            {
+                RifaRepository c = new RifaRepository();
+                UsuarioRepository u = new UsuarioRepository();
+                var listaNumeros = c.GetAll();
+
+                if (rifa.Nome != null || rifa.Numeros != null)
+                {
+                    var numeros = rifa.Numeros.Split(",");
+
+                    var x = new List<int>();
+                    foreach (var n in numeros)
+                    {
+                        foreach (var ln in listaNumeros)
+                        {
+                            if (ln.Numero == Convert.ToInt32(n))
+                            {
+                                if (ln.Vendido == false)
+                                {
+                                    res = 1;
+                                    x.Add(ln.Numero);
+
+                                }
+                                else
+                                {
+                                    Rifa r = new Rifa();
+                                    r.NomeId = 0;
+                                    r.Pago = false;
+                                    r.Vendido = false;
+                                    r.Numero = ln.Numero;
+
+                                    c.Update(r);
+                                }
+                            }
+                        }
+                    }
+
+                    var result = String.Join(", ", x.ToArray());
+
+                    ViewBag.r = result;
+
+
+                }
+                var listas = c.ListaOrdenada();
+                var aux = 1;
+                ViewBag.res = res;
+                ViewBag.listaUsuarios = u.GetAll();
+                if (aux == 1)
+                    return View();
+
+
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message == "Input string was not in a correct format.")
+                {
+                    res = 2;
+                }
+                UsuarioRepository u = new UsuarioRepository();
+                ViewBag.listaUsuarios = u.GetAll();
+                return View();
+            }
+            ViewBag.res = res;
+            return RedirectToAction("Index");
+        }
+
 
 
         public IActionResult About()
