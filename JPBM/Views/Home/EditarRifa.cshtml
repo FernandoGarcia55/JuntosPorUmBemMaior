@@ -1,25 +1,23 @@
-﻿@model RifaViewModel
+﻿@model NaoPagosViewModel
+
 @{
     ViewData["Title"] = "EditarRifa";
     var res = ViewBag.res;
     var r = ViewBag.r;
     var listaUsuarios = ViewBag.listaUsuarios as List<Usuarios>;
 
-   
-
 }
 
-<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index">
+<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="EditarRifas">
     <div class="text-center">
         <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
-
     </div>
 
 
     <div>
 
         <label> Digite o nome do comprardor: </label>
-        <input type="hidden" id="nome" asp-for="NomeId" />
+        <input type="hidden" id="nome"/>
         <select id="nomes" name="nomes">
             @foreach (var x in listaUsuarios)
             {
@@ -28,6 +26,8 @@
         </select>
         <label> Números pagos: </label>  <label id="pagos"></label>
         <label> Números não pagos: </label>   <label id="naopagos"></label>
+
+        <input type="hidden" asp-for="NaoPagos" id="naopagoss" />
 
 
 
@@ -47,6 +47,7 @@
         var separacao = dados.split(',');
         document.getElementById("pagos").innerHTML = separacao[2];
         document.getElementById("naopagos").innerHTML = separacao[3];
+        document.getElementById("naopagoss").value = separacao[3];
 
     });
     
