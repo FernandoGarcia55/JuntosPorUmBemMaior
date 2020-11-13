@@ -1,0 +1,33 @@
+﻿@model RifaViewModel
+@{
+    ViewData["Title"] = "EditarRifa";
+    var res = ViewBag.res;
+    var r = ViewBag.r;
+    var listaUsuarios = ViewBag.listaUsuarios as List<JPBM.Entidades.Usuarios>;
+}
+
+<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index">
+    <div class="text-center">
+        <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
+        
+    </div>
+
+
+    <div>
+        <label>Digite os numeros separados por virgula: exp: 1,45,32,58 </label>
+        <input type="text" id="numero" asp-for="Numeros" />
+        <label> Digite o nome do comprardor: </label>
+        <input type="hidden" id="nome" asp-for="NomeId" />
+        <select id="nomes" name="nomes">
+            @foreach (var x in listaUsuarios)
+            {
+                <option value="@x.Id">@x.Nome</option>
+            }
+        </select>
+        <label> Esta pago ? </label>
+        <input type="checkbox" id="pago" asp-for="Pago" />
+
+        <input type="submit" value="enviar" />
+    </div>
+
+</form>

@@ -1,0 +1,28 @@
+﻿@model UsuariosViewModel
+@{
+    ViewData["Title"] = "Usuarios";
+    var r = ViewBag.r;
+}
+
+<h2>Usuarios</h2>
+<input type="hidden" id="r" name="r" value="@r" />
+<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="CadastroUsuarios">
+    <label>Nome:</label>
+    <input type="text" id="nome" asp-for="Nome" />
+    <label>Telefone:</label>
+    <input type="text" id="telefone" asp-for="Telefone" />
+    <label>E-mail:</label>
+    <input type="text" id="email" asp-for="Email" />
+    <input type="submit" />
+</form>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+     $(document).ready(function () {
+        var resposta = document.getElementById("r").value;
+         if (resposta == 1) {
+             alert("email já cadastrado");
+         }
+     });
+</script>
