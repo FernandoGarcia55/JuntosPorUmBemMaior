@@ -12,6 +12,59 @@ namespace JPBM.Controllers
 {
     public class HomeController : Controller
     {
+
+        [HttpPost]
+        public ActionResult EditarRifas(UsuariosViewModel u)
+        {
+            RifaRepository rifas = new RifaRepository();
+            UsuarioRepository usuarios = new UsuarioRepository();
+
+            var listarRifas = rifas.GetAll();
+            var listarUsuarios = usuarios.GetAll();
+
+            List<Usuarios> listUsers = new List<Usuarios>();
+
+            foreach(var usuario in listarUsuarios)
+            {
+                List<int> listaPago = new List<int>();
+                List<int> listaNaoPago = new List<int>();
+
+                foreach (var rifa in listarRifas )
+                {
+                    if(usuario.Id == rifa.NomeId)
+                    {
+                        if(rifa.Pago == true)
+                        {
+                            listaPago.Add(rifa.Numero);
+                            
+                        }
+                        else
+                        {
+                            listaNaoPago.Add(rifa.Numero);
+                           
+                        }
+                    }
+                   
+                }
+
+                var resultRifasPagas = String.Join(", ", listaPago.ToArray());
+                var resultRifasNaoPagas = String.Join(", ", listaNaoPago.ToArray());
+            }
+
+            foreach(var l in listUsers)
+            {
+                if(u.Id == l.Id)
+                {
+                    ViewBag.ListaPago = l;
+                }
+            }
+
+         
+
+            
+            return PartialView();
+        }
+
         public IActionResult Index(RifaViewModel rifa)
         {
             var res = 0;
@@ -129,91 +182,48 @@ namespace JPBM.Controllers
 
             return RedirectToAction("Index");
         }
-        public IActionResult EditarRifa(RifaViewModel rifa)
+        public IActionResult EditarRifa()
         {
-            var res = 0;
-            try
+            RifaRepository rifas = new RifaRepository();
+            UsuarioRepository usuarios = new UsuarioRepository();
+
+            var listarRifas = rifas.GetAll();
+            var listarUsuarios = usuarios.GetAll();
+
+            List<Usuarios> listUsers = new List<Usuarios>();
+
+            foreach (var usuario in listarUsuarios)
             {
+                List<int> listaPago = new List<int>();
+                List<int> listaNaoPago = new List<int>();
 
-                RifaRepository c = new RifaRepository();
-                UsuarioRepository u = new UsuarioRepository();
-                var listaNumeros = c.GetAll();
-
-                if (rifa.Nome != null || rifa.Numeros != null)
+                foreach (var rifa in listarRifas)
                 {
-                    var numeros = rifa.Numeros.Split(",");
-
-                    var x = new List<int>();
-                    foreach (var n in numeros)
+                    if (usuario.Id == rifa.NomeId)
                     {
-                        foreach (var ln in listaNumeros)
+                        if (rifa.Pago == true)
                         {
-                            if (ln.Numero == Convert.ToInt32(n))
-                            {
-                                if (ln.Vendido == true)
-                                {
-                                    res = 1;
-                                    x.Add(ln.Numero);
-                                }
-                                else
-                                {
-                                    Rifa r = new Rifa();
-                                    r.NomeId = rifa.NomeId;
-                                    r.Pago = rifa.Pago;
-                                    r.Vendido = true;
-                                    r.Numero = ln.Numero;
+                            listaPago.Add(rifa.Numero);
 
-                                    c.Update(r);
-                                }
-                            }
+                        }
+                        else
+                        {
+                            listaNaoPago.Add(rifa.Numero);
+
                         }
                     }
 
-                    var result = String.Join(", ", x.ToArray());
-
-                    ViewBag.r = result;
-
-
-                }
-                var listas = c.ListaOrdenada();
-                var aux = 1;
-                foreach (var lista in listas)
-                {
-                    ViewData["Lista" + aux] = lista;
-                    aux++;
-                }
-                ViewBag.listaUsuarios = u.GetAll();
-            }
-            catch (Exception e)
-            {
-
-                if (e.Message == "Input string was not in a correct format.")
-                {
-                    res = 2;
                 }
 
-                RifaRepository c = new RifaRepository();
-                UsuarioRepository u = new UsuarioRepository();
-                var listas = c.ListaOrdenada();
-                var aux = 1;
-                foreach (var lista in listas)
-                {
-                    ViewData["Lista" + aux] = lista;
-                    aux++;
-                }
-                ViewBag.listaUsuarios = u.GetAll();
+                usuario.Pagos = String.Join("- ", listaPago.ToArray());
+                usuario.NaoPagos = String.Join("- ", listaNaoPago.ToArray());
+                listUsers.Add(usuario);
             }
 
-            //for (var x = 1; x <= 150; x++)
-            //{
-            //    Rifa r = new Rifa();
-            //    r.Nome = "";
-            //    r.Numero = x;
-            //    r.Pago = false;
-            //    r.Vendido = false;
-            //    c.Add(r);
-            //}
-            ViewBag.res = res;
+            ViewBag.listaUsuarios = listUsers;
+
+
+
 
             return View();
         }

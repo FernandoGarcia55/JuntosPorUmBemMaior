@@ -3,31 +3,51 @@
     ViewData["Title"] = "EditarRifa";
     var res = ViewBag.res;
     var r = ViewBag.r;
-    var listaUsuarios = ViewBag.listaUsuarios as List<JPBM.Entidades.Usuarios>;
+    var listaUsuarios = ViewBag.listaUsuarios as List<Usuarios>;
+
+   
+
 }
 
 <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index">
     <div class="text-center">
         <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
-        
+
     </div>
 
 
     <div>
-        <label>Digite os numeros separados por virgula: exp: 1,45,32,58 </label>
-        <input type="text" id="numero" asp-for="Numeros" />
+
         <label> Digite o nome do comprardor: </label>
         <input type="hidden" id="nome" asp-for="NomeId" />
         <select id="nomes" name="nomes">
             @foreach (var x in listaUsuarios)
             {
-                <option value="@x.Id">@x.Nome</option>
+                <option value="@x.Id,@x.Nome,@x.Pagos,@x.NaoPagos">@x.Nome</option>
             }
         </select>
-        <label> Esta pago ? </label>
-        <input type="checkbox" id="pago" asp-for="Pago" />
+        <label> Números pagos: </label>  <label id="pagos"></label>
+        <label> Números não pagos: </label>   <label id="naopagos"></label>
+
+
+
 
         <input type="submit" value="enviar" />
     </div>
 
 </form>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+    jQuery("#nomes").change(function () {
+
+        var dados = jQuery(this).val();
+        var separacao = dados.split(',');
+        document.getElementById("pagos").innerHTML = separacao[2];
+        document.getElementById("naopagos").innerHTML = separacao[3];
+
+    });
+    
+</script>

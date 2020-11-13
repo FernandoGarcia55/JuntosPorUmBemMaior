@@ -26,5 +26,9 @@ namespace JPBM.Entidades
         public string Telefone { get; set; }
         public string Email { get; set; }
 
+      
+        public string Pagos { get; set; }
+        public string NaoPagos { get; set; }
+
     }
 }
