@@ -28,7 +28,7 @@ namespace JPBM
                     var command = new SqlCommand(sql, con);
                     command.Parameters.AddWithValue("@Numero", rifa.Numero);
                     command.Parameters.AddWithValue("@Pago", rifa.Pago);
-                    command.Parameters.AddWithValue("@Nome", rifa.NomeId);
+                    command.Parameters.AddWithValue("@NomeId", rifa.NomeId);
                     command.Parameters.AddWithValue("@Vendido", rifa.Vendido);
 
                     command.ExecuteReader();

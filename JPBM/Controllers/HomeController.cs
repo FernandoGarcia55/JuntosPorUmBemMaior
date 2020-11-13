@@ -14,57 +14,30 @@ namespace JPBM.Controllers
     {
 
         [HttpPost]
-        public ActionResult EditarRifas(UsuariosViewModel u)
+        public ActionResult EditarRifas(NaoPagosViewModel u)
         {
             RifaRepository rifas = new RifaRepository();
-            UsuarioRepository usuarios = new UsuarioRepository();
-
-            var listarRifas = rifas.GetAll();
-            var listarUsuarios = usuarios.GetAll();
-
-            List<Usuarios> listUsers = new List<Usuarios>();
-
-            foreach(var usuario in listarUsuarios)
+            var listaRifas = rifas.GetAll();
+            if(u.NaoPagos != null)
             {
-                List<int> listaPago = new List<int>();
-                List<int> listaNaoPago = new List<int>();
-
-                foreach (var rifa in listarRifas )
+                var numeros = u.NaoPagos.Split("-");
+                foreach (var numero in numeros)
                 {
-                    if(usuario.Id == rifa.NomeId)
+                    foreach (var lista in listaRifas)
                     {
-                        if(rifa.Pago == true)
+                        if (Convert.ToInt32(numero) == lista.Numero)
                         {
-                            listaPago.Add(rifa.Numero);
-                            
+                            lista.Pago = true;
+                            rifas.Update(lista);
                         }
-                        else
-                        {
-                            listaNaoPago.Add(rifa.Numero);
-                           
-                        }
+
                     }
-                   
-                }
-
-                var resultRifasPagas = String.Join(", ", listaPago.ToArray());
-                var resultRifasNaoPagas = String.Join(", ", listaNaoPago.ToArray());
-            }
-
-            foreach(var l in listUsers)
-            {
-                if(u.Id == l.Id)
-                {
-                    ViewBag.ListaPago = l;
                 }
             }
-
-         
-
             
-            return PartialView();
+            return RedirectToAction("Index");
         }
-
+     
         public IActionResult Index(RifaViewModel rifa)
         {
             var res = 0;
@@ -153,6 +126,7 @@ namespace JPBM.Controllers
 
             return View();
         }
+       
 
         public IActionResult Usuarios()
         {
@@ -215,8 +189,8 @@ namespace JPBM.Controllers
 
                 }
 
-                usuario.Pagos = String.Join("- ", listaPago.ToArray());
-                usuario.NaoPagos = String.Join("- ", listaNaoPago.ToArray());
+                usuario.Pagos = String.Join("-", listaPago.ToArray());
+                usuario.NaoPagos = String.Join("-", listaNaoPago.ToArray());
                 listUsers.Add(usuario);
             }
 
