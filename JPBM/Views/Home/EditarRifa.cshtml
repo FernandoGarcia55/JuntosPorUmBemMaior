@@ -8,34 +8,47 @@
 
 }
 
-<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="EditarRifas">
-    <div class="text-center">
-        <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
-    </div>
+<html>
+<body>
+    @*inputs utilizados p auxilio no envio dos dados: (manter)*@
+    <input type="hidden" id="nome" />
+    <input type="hidden" asp-for="NaoPagos" id="naopagoss" />
+    <table style="width:100%">
+        <tr>
+            <th><img src="~/images/logojpbm.png" align="left" width=100 height=100></th>
+            <th>
+                <div class="text-center">
+                    <h1 class="display-4">Editar Rifas</h1>
+                </div>
+            </th>
+            <th><img src="~/images/logojpbm.png" align="right" width=100 height=100></th>
+        </tr>
+    </table>
+    <br /><br />
+
+    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="EditarRifas">
 
 
-    <div>
+        <div>
 
-        <label> Digite o nome do comprardor: </label>
-        <input type="hidden" id="nome"/>
-        <select id="nomes" name="nomes">
-            @foreach (var x in listaUsuarios)
-            {
-                <option value="@x.Id,@x.Nome,@x.Pagos,@x.NaoPagos">@x.Nome</option>
-            }
-        </select>
-        <label> Números pagos: </label>  <label id="pagos"></label>
-        <label> Números não pagos: </label>   <label id="naopagos"></label>
+            <label> Digite o nome do comprardor: </label>
+            <input type="hidden" id="nome" />
+            <select id="nomes" name="nomes">
+                @foreach (var x in listaUsuarios)
+                {
+                    <option value="@x.Id,@x.Nome,@x.Pagos,@x.NaoPagos">@x.Nome</option>
+                }
+            </select>
+            <label> Números pagos: </label>  <label id="pagos"></label>
+            <label> Números não pagos: </label>   <label id="naopagos"></label>
 
-        <input type="hidden" asp-for="NaoPagos" id="naopagoss" />
+            <input type="hidden" asp-for="NaoPagos" id="naopagoss" />
+            <input type="submit" value="enviar" />
+        </div>
 
-
-
-
-        <input type="submit" value="enviar" />
-    </div>
-
-</form>
+    </form>
+</body>
+</html>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -50,5 +63,5 @@
         document.getElementById("naopagoss").value = separacao[3];
 
     });
-    
+
 </script>

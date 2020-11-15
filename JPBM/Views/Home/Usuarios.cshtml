@@ -4,7 +4,23 @@
     var r = ViewBag.r;
 }
 
-<h2>Usuarios</h2>
+<html>
+<body>
+    <table style="width:100%">
+        <tr>
+            <th><img src="~/images/logojpbm.png" align="left" width=100 height=100></th>
+            <th>
+                <div class="text-center">
+                    <h1 class="display-4">Cadastrar Usuários</h1>
+                </div>
+            </th>
+            <th><img src="~/images/logojpbm.png" align="right" width=100 height=100></th>
+        </tr>
+    </table>
+    <br /><br />
+</body>
+</html>
+
 <input type="hidden" id="r" name="r" value="@r" />
 <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="CadastroUsuarios">
     <label>Nome:</label>
@@ -19,10 +35,10 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
-     $(document).ready(function () {
+    $(document).ready(function () {
         var resposta = document.getElementById("r").value;
-         if (resposta == 1) {
-             alert("email já cadastrado");
-         }
-     });
+        if (resposta == 1) {
+            alert("email já cadastrado");
+        }
+    });
 </script>

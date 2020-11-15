@@ -1,0 +1,46 @@
+/**
+Template Name: Material Able Admin Template
+Author: #
+Email: #
+File: style.css
+=============
+  == Table of Contents==
+	- Custom Css
+	- Generic classes
+		-	Margin, Padding, Font class, text align, position, floating, overflow, background class, text color, display class, boarder class
+	- Theme Elements
+		-	Accordion, Button, tabs, typography, buttons, box shadow, pagination, Basic card
+	- General Elements
+		-	Lable & Badges, Materialize general elements, Lables
+	- Pages
+		-   Progress bar, Chat , dark layout
+============= */
+// General theme contents
+@import "/scss/partials/variables";
+@import "/scss/partials/mixins";
+@import "/scss/partials/general";
+@import "/scss/partials/generic";
+
+// Menu
+@import "/scss/partials/menu/menu";
+@import "/scss/partials/menu/horizontal-menu";
+
+// Important Theme elements
+@import "/scss/partials/theme-elements/button";
+@import "/scss/partials/theme-elements/form-elements";
+
+// Theme elements
+@import "/scss/partials/theme-elements/label-badges";
+
+// Tables
+@import "/scss/partials/tables/tables";
+
+// Other
+@import "/scss/partials/other/chat";
+@import "/scss/partials/other/progress-bar";
+
+// Responsive css
+@import "/scss/partials/responsive/responsive";
+
+// dark layout css
+@import "/scss/partials/dark";

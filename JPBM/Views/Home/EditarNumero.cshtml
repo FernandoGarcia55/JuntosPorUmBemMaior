@@ -5,20 +5,30 @@
     var r = ViewBag.r;
     var listaUsuarios = ViewBag.listaUsuarios as List<JPBM.Entidades.Usuarios>;
 }
-
-<h2>EditarNumero</h2>
+<html>
+<body>
+    <table style="width:100%">
+        <tr>
+            <th><img src="~/images/logojpbm.png" align="left" width=100 height=100></th>
+            <th>
+                <div class="text-center">
+                    <h1 class="display-4">Editar Números</h1>
+                </div>
+            </th>
+            <th><img src="~/images/logojpbm.png" align="right" width=100 height=100></th>
+        </tr>
+    </table>
+    <br /><br />
+</body>
+</html>
 
 <input type="hidden" id="res" name="res" value="@res" />
 <input type="hidden" id="r" name="r" value="@r" />
 <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="EditarNumero">
-    <div class="text-center">
-        <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
-    </div>
-
 
     <div>
-        <label>Digite os numeros separados por virgula: exp: 1,45,32,58 </label>
-        <input type="text" id="numero" asp-for="Numeros" />
+        <label>Digite o número para alterar: </label>
+        <input type="text" id="numero" asp-for="Numeros" placeholder="Exemplo: 1,45,32,58" />
         <input type="submit" value="enviar" />
     </div>
 
