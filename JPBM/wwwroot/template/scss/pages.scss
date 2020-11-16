@@ -1,0 +1,42 @@
+/**
+Template Name: Material Able Admin Template
+Author: #
+Email: #
+File: style.css
+=============
+  == Table of Contents==
+	- Custom Css
+	- General Elements
+		-	Modal, Nestable, List, Portlates, Preloader, Calender, To-Do, Materialize general elements, Lables
+	- Advance Form Elements
+	- Pages
+		-	Loader page, Invoice, Tasklist, Task detail, Range-slider, Counter, Maintenance, Color, FAQ,  Panels & wells, Contact card, Auth pages, Flag, Gallery, Products pages, Widget, Email, Social timeline, Datatable, Chat, Blog, Wizard, CRM dashboard, Task board, Issue list, Chartlist, X-editable
+============= */
+// General theme contents
+@import "/scss/partials/variables";
+@import "/scss/partials/mixins";
+// theme-elements
+@import "/scss/partials/theme-elements/box-shadow";
+// pages
+@import "/scss/partials/pages/icon-layout";
+@import "/scss/partials/pages/ready-to-use";
+@import "/scss/partials/pages/alert";
+@import "/scss/partials/pages/authentication";
+@import "/scss/partials/pages/breadcrumb";
+@import "/scss/partials/pages/charts";
+@import "/scss/partials/pages/color";
+@import "/scss/partials/pages/draggable";
+@import "/scss/partials/pages/e-payment";
+@import "/scss/partials/pages/editors";
+@import "/scss/partials/pages/fb-wall";
+@import "/scss/partials/pages/full-calender";
+@import "/scss/partials/pages/job-find";
+@import "/scss/partials/pages/mail-pages";
+@import "/scss/partials/pages/maps";
+@import "/scss/partials/pages/note";
+@import "/scss/partials/pages/prism";
+@import "/scss/partials/pages/pre-loader";
+@import "/scss/partials/pages/range-slider";
+@import "/scss/partials/pages/rating";
+@import "/scss/partials/pages/todo";
+@import "/scss/partials/pages/genral_pages";

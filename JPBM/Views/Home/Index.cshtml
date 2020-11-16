@@ -15,47 +15,73 @@
     var lista8 = ViewData["Lista8"] as List<Rifa>;
     var lista9 = ViewData["Lista9"] as List<Rifa>;
     var lista10 = ViewData["Lista10"] as List<Rifa>;
-    //var lista11 = ViewData["Lista11"] as List<Rifa>;
-    //var lista12 = ViewData["Lista12"] as List<Rifa>;
-    //var lista13 = ViewData["Lista13"] as List<Rifa>;
-    //var lista14 = ViewData["Lista14"] as List<Rifa>;
-    //var lista15 = ViewData["Lista15"] as List<Rifa>;
-
-    //int PermissaoCount = 0;
-    //var PermissaoCount1 = "";
 }
 
-<input type="hidden" id="r" name="r" value="@res" />
-<input type="hidden" id="res" name="res" value="@r" />
-<form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index">
-    <div class="text-center">
-        <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
+<html>
+<body>
+    @* inputs utilizados p auxilio no envio dos dados: (manter) *@
+    <input type="hidden" id="r" name="r" value="@res" />
+    <input type="hidden" id="res" name="res" value="@r" />
+    <table style="width:100%">
+        <tr>
+            <th><img src="~/images/logojpbm.png" align="left" width=100 height=100></th>
+            <th>
+                <div class="text-center">
+                    <h1 class="display-4">Rifa - Juntos por um bem Maior</h1>
+                </div>
+            </th>
+            <th><img src="~/images/logojpbm.png" align="right" width=100 height=100></th>
+        </tr>
+    </table>
+    <br /><br />
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-block">
+
+                <table style="width: 100%">
+                    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="Index">
+                        <tr>
+                            <td>
+                                <label>Digite os números: </label>
+                                <input type="text" id="numero" asp-for="Numeros" placeholder="Exemplo: 1,45,32,58" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label> Selecione o comprador: </label>
+                                <input type="hidden" id="nome" asp-for="NomeId" />
+                                <select id="nomes" name="nomes">
+                                    @foreach (var x in listaUsuarios)
+                                    {
+                                        <option value="@x.Id">@x.Nome</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label> Está pago? </label>
+                                <input type="checkbox" id="pago" asp-for="Pago" />
+                            </td>
+                            <td></td>
+                            <td>
+                                <input type="submit" value="Enviar" class="btn btn-success waves-effect waves-light" style="position: absolute; top:85px; right:145px" />
+
+
+                    </form>
+                    <button data-toggle="collapse" data-target="#listascolapsadas" class="btn btn-info waves-effect waves-light" style="position: absolute; top:85px; right:30px"> Exibir Rifas </button>
+                    </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
+</body>
+</html>
 
-    <div>
-        <label>Digite os numeros separados por virgula: exp: 1,45,32,58 </label>
-        <input type="text" id="numero" asp-for="Numeros" />
-        <label> Digite o nome do comprardor: </label>
-        <input type="hidden" id="nome" asp-for="NomeId" />
-        <select id="nomes" name="nomes">
-            @foreach (var x in listaUsuarios)
-            {
-                <option value="@x.Id">@x.Nome</option>
-            }
-        </select>
-        <label> Esta pago ? </label>
-        <input type="checkbox" id="pago" asp-for="Pago" />
-
-        <input type="submit" value="enviar" />
-    </div>
-
-</form>
-
-
-
-<div>
-
+<div id="listascolapsadas" class="collapse">
     <table class="table">
         <tbody>
             <tr>
@@ -210,46 +236,36 @@
             </tr>
         </tbody>
     </table>
-
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var resposta = document.getElementById("r").value;
+        var respostaa = document.getElementById("res").value;
 
 
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
-    <script>
-
-
-        $(document).ready(function () {
-            var resposta = document.getElementById("r").value;
-            var respostaa = document.getElementById("res").value;
-
-
-            if (resposta == 1) {
-                alert("Numeros ja vendidos: " + respostaa);
-            } else if (resposta == 2) {
-                alert("Informe apenas numeros no campo de numeros.");
-            }
-        });
-
-        jQuery("#nomes").change(function () {
-            var dados = jQuery(this).val();
-
-            $("#nome").val(dados);
-        });
-
-        function AtualizarPermissoes(sender, id) {
-            var inputAtivo = $('#permissao-' + id);
-            if ($(sender).is(':checked')) {
-                inputAtivo.val("True");
-            } else {
-                inputAtivo.val("False");
-            }
+        if (resposta == 1) {
+            alert("Número(s) já vendido(s): " + respostaa);
+        } else if (resposta == 2) {
+            alert("Informe apenas números no campo.");
         }
+    });
 
-    </script>
+    jQuery("#nomes").change(function () {
+        var dados = jQuery(this).val();
 
+        $("#nome").val(dados);
+    });
 
+    function AtualizarPermissoes(sender, id) {
+        var inputAtivo = $('#permissao-' + id);
+        if ($(sender).is(':checked')) {
+            inputAtivo.val("True");
+        } else {
+            inputAtivo.val("False");
+        }
+    }
 
-   
+</script>

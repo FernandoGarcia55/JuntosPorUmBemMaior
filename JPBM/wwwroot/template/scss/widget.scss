@@ -1,0 +1,15 @@
+/**
+Template Name: Material Able Admin Template
+Author: #
+Email: #
+File: style.css
+=============
+  == Table of Contents==
+	- Pages
+		- Dashboard , widget
+============= */
+// General theme contents
+@import "/scss/partials/variables";
+@import "/scss/partials/mixins";
+// Widget
+@import "/scss/partials/widget-dashboard/widget";
