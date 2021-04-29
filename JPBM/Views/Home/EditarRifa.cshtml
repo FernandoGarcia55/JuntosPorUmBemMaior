@@ -34,6 +34,7 @@
             <label> Digite o nome do comprardor: </label>
             <input type="hidden" id="nome" />
             <select id="nomes" name="nomes">
+                <option value="0 ">Selecione uma Nome</option>
                 @foreach (var x in listaUsuarios)
                 {
                     <option value="@x.Id,@x.Nome,@x.Pagos,@x.NaoPagos">@x.Nome</option>

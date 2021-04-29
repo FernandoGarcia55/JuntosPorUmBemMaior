@@ -37,7 +37,6 @@ namespace JPBM.Controllers
             
             return RedirectToAction("Index");
         }
-     
         public IActionResult Index(RifaViewModel rifa)
         {
             var res = 0;
@@ -112,22 +111,20 @@ namespace JPBM.Controllers
                 }
                 ViewBag.listaUsuarios = u.GetAll();
             }
-
+            //RifaRepository y = new RifaRepository();
             //for (var x = 1; x <= 150; x++)
             //{
             //    Rifa r = new Rifa();
-            //    r.Nome = "";
+            //    r.NomeId = 0;
             //    r.Numero = x;
             //    r.Pago = false;
             //    r.Vendido = false;
-            //    c.Add(r);
+            //    y.Add(r);
             //}
             ViewBag.res = res;
 
             return View();
         }
-       
-
         public IActionResult Usuarios()
         {
             ViewBag.r = TempData["resp"];
@@ -201,7 +198,6 @@ namespace JPBM.Controllers
 
             return View();
         }
-
         public IActionResult EditarNumero()
         {
             return View();
@@ -278,27 +274,22 @@ namespace JPBM.Controllers
             return RedirectToAction("Index");
         }
 
-
-
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
 
             return View();
         }
-
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
 
             return View();
         }
-
         public IActionResult Privacy()
         {
             return View();
         }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

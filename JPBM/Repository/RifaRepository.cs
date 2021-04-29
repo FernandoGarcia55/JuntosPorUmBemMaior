@@ -11,7 +11,9 @@ namespace JPBM
         public static string SQLConnection { get; private set; }
         public static string GetSQLConnection()
         {
-            SQLConnection = @"Data Source=jpbmdbo.database.windows.net;Initial Catalog = JPBMDBO; Persist Security Info = False;User Id=jpbm;Password=aa010203@; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 180;";
+            SQLConnection = @"Data Source=jpbmserver.database.windows.net;Initial Catalog = JPBM_DB; Persist Security Info = False;User Id=juntosAdmin;Password=juntos$M; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 180;";
+            //SQLConnection = @"Data Source=NOTE206;Initial Catalog=JPBMDataBase;Integrated Security=True;Connect Timeout=30";
+            
             return SQLConnection;
         }
 

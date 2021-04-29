@@ -52,6 +52,7 @@
                                 <label> Selecione o comprador: </label>
                                 <input type="hidden" id="nome" asp-for="NomeId" />
                                 <select id="nomes" name="nomes">
+                                    <option value="0">Selecione um Usuário</option>
                                     @foreach (var x in listaUsuarios)
                                     {
                                         <option value="@x.Id">@x.Nome</option>
