@@ -10,6 +10,7 @@ namespace JPBM.Configuration
         public static void ConfigurarDependencias(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IClienteRepository, ClienteRepository>();
+            services.AddTransient<ITipoContatoRepository, TipoContatoRepository>();
         }
     }
 }
