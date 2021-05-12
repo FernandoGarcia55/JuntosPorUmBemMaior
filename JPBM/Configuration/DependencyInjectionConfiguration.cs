@@ -11,6 +11,7 @@ namespace JPBM.Configuration
         {
             services.AddTransient<IClienteRepository, ClienteRepository>();
             services.AddTransient<ITipoContatoRepository, TipoContatoRepository>();
+            services.AddTransient<IContatoRepository, ContatoRepository>();
         }
     }
 }
