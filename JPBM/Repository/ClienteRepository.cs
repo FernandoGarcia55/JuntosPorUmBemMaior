@@ -55,16 +55,16 @@ namespace JPBM.Repository
                                                      WHERE ClienteId = @ClienteId", new { ClienteId = id });
         }
 
-        public Task<int> UpdateAsync(Cliente entity)
+        public async Task<int> UpdateAsync(Cliente entity)
         {
-            return ExecuteAsync(@"UPDATE Cliente 
-                                   SET
-                                    Nome = @Nome,
-                                    Sobrenome = @Sobrenome,
-                                    Vendedor = @Vendedor,
-                                    DataCadastro = @DataCadastro,
-                                    DataAlteracao = @DataAlteracao
-                                  WHERE ClienteId = @ClienteId", entity);
+            return await ExecuteAsync(@"UPDATE Cliente 
+                                         SET
+                                          Nome = @Nome,
+                                          Sobrenome = @Sobrenome,
+                                          Vendedor = @Vendedor,
+                                          DataCadastro = @DataCadastro,
+                                          DataAlteracao = @DataAlteracao
+                                        WHERE ClienteId = @ClienteId", entity);
         }
     }
 }

@@ -43,12 +43,12 @@ namespace JPBM.Repository
                                                      WHERE TipoContatoId = @TipoContatoId", new { TipoContatoId = id });
         }
 
-        public Task<int> UpdateAsync(TipoContato entity)
+        public async Task<int> UpdateAsync(TipoContato entity)
         {
-            return ExecuteAsync(@"UPDATE TipoContato 
-                                   SET
-                                    Descricao = @Descricao
-                                  WHERE TipoContatoId = @TipoContatoId", entity);
+            return await ExecuteAsync(@"UPDATE TipoContato 
+                                          SET
+                                           Descricao = @Descricao
+                                        WHERE TipoContatoId = @TipoContatoId", entity);
         }
     }
 }

@@ -60,17 +60,17 @@ namespace JPBM.Repository
                                                      WHERE ContatoId = @ContatoId", new { ContatoId = id });
         }
 
-        public Task<int> UpdateAsync(Contato entity)
+        public async Task<int> UpdateAsync(Contato entity)
         {
-            return ExecuteAsync(@"UPDATE Contato 
-                                   SET
-                                    ClienteId = @ClienteId,
-                                    TipoContatoId = @TipoContatoId,
-                                    Valor = @Valor,
-                                    Ativo = @Ativo,
-                                    DataCadastro = @DataCadastro,
-                                    DataInativacao = @DataInativacao
-                                  WHERE ContatoId = @ContatoId", entity);
+            return await ExecuteAsync(@"UPDATE Contato 
+                                         SET
+                                          ClienteId = @ClienteId,
+                                          TipoContatoId = @TipoContatoId,
+                                          Valor = @Valor,
+                                          Ativo = @Ativo,
+                                          DataCadastro = @DataCadastro,
+                                          DataInativacao = @DataInativacao
+                                        WHERE ContatoId = @ContatoId", entity);
         }
     }
 }
