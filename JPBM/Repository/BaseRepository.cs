@@ -16,6 +16,10 @@ namespace JPBM.Repository
             ConnectionString = configuration.GetConnectionString("ConexaoJPBM");
         }
 
+        public BaseRepository()
+        {
+        }
+
         public async Task<T> QuerySingleOrDefaultAsync(string query, object parameters)
         {
             using (var connection = new SqlConnection(ConnectionString))

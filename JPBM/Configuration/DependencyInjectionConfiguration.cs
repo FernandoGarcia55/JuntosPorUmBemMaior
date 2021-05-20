@@ -13,6 +13,7 @@ namespace JPBM.Configuration
             services.AddTransient<ITipoContatoRepository, TipoContatoRepository>();
             services.AddTransient<IContatoRepository, ContatoRepository>();
             services.AddTransient<IItemRifaRepository, ItemRifaRepository>();
+            services.AddTransient<IRifaRepository, RifaRepository>();
         }
     }
 }
