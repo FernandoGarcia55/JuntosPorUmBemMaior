@@ -1,4 +1,5 @@
 ﻿using JPBM.Interfaces;
+using JPBM.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace JPBM.Controllers
         // GET: RifaController
         public async Task<ActionResult> Index()
         {
-            var rifas = await _rifaService.ListarRifasAsync();
+            var rifas = await _rifaService.ListarAsync();
             return View(rifas);
         }
 
@@ -36,10 +37,14 @@ namespace JPBM.Controllers
         // POST: RifaController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create([FromForm] RifaViewModel rifaViewModel)
         {
             try
             {
+                var rifaCriada = await _rifaService.Criar(rifaViewModel);
+                if (!rifaCriada)
+                    return View();
+
                 return RedirectToAction(nameof(Index));
             }
             catch

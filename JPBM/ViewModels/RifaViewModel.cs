@@ -9,21 +9,26 @@ namespace JPBM.ViewModels
     public class RifaViewModel
     {
         public int RifaId { get; set; }
-        public short Tamanho { get; set; }
+        public ushort Tamanho { get; set; }
         public string Nome { get; set; }
+
         [DisplayName("Prêmio")]
         public string Premio { get; set; }
         public decimal Valor { get; set; }
+
         [DisplayName("Status")]
-        public StatusRifa StatusRifa { get; set; }
+        public StatusRifa StatusRifa { get; set; } = StatusRifa.Ativa;
+
         [DisplayName("Cadastro")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy hh:mm}")]
-        public DateTime DataCadastro { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime DataCadastro { get; set; } = DateTime.Now;
+
         [DisplayName("Início")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy hh:mm}")]
-        public DateTime DataInicio { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
+        public DateTime? DataInicio { get; set; } = DateTime.Now;
+
         [DisplayName("Sorteio")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy hh:mm}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime DataSorteio { get; set; }
 
         public Rifa MapToEntity()
@@ -31,13 +36,13 @@ namespace JPBM.ViewModels
             return new Rifa
             {
                 RifaId = RifaId,
-                Tamanho = Tamanho,
+                Tamanho = (short)Tamanho,
                 Nome = Nome,
                 Premio = Premio,
                 Valor = Valor,
                 StatusRifaId = (byte)StatusRifa,
                 DataCadastro = DataCadastro,
-                DataInicio = DataInicio,
+                DataInicio = DataInicio ?? DateTime.Now,
                 DataSorteio = DataSorteio
             };
         }
@@ -47,7 +52,7 @@ namespace JPBM.ViewModels
             return new RifaViewModel
             {
                 RifaId = rifa.RifaId,
-                Tamanho = rifa.Tamanho,
+                Tamanho = (ushort)rifa.Tamanho,
                 Nome = rifa.Nome,
                 Premio = rifa.Premio,
                 Valor = rifa.Valor,

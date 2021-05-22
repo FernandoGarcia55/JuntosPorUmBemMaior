@@ -6,6 +6,7 @@ namespace JPBM.Interfaces
 {
     public interface IRifaService
     {
-        Task<IReadOnlyList<RifaViewModel>> ListarRifasAsync();
+        Task<IReadOnlyList<RifaViewModel>> ListarAsync();
+        Task<bool> Criar(RifaViewModel rifaViewModel);
     }
 }

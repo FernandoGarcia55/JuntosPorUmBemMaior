@@ -14,7 +14,13 @@ namespace JPBM.Services
             _rifaRepository = rifaRepository;
         }
 
-        public async Task<IReadOnlyList<RifaViewModel>> ListarRifasAsync()
+        public async Task<bool> Criar(RifaViewModel rifaViewModel)
+        {
+            var rifa = rifaViewModel.MapToEntity();
+            return await _rifaRepository.AddAsync(rifa) > 0;
+        }
+
+        public async Task<IReadOnlyList<RifaViewModel>> ListarAsync()
         {
             var rifas = await _rifaRepository.GetAllAsync();
             var rifasViewModel = new List<RifaViewModel>(rifas.Count);
