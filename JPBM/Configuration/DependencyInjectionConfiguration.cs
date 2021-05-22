@@ -1,5 +1,6 @@
 ﻿using JPBM.Interfaces;
 using JPBM.Repository;
+using JPBM.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +15,8 @@ namespace JPBM.Configuration
             services.AddTransient<IContatoRepository, ContatoRepository>();
             services.AddTransient<IItemRifaRepository, ItemRifaRepository>();
             services.AddTransient<IRifaRepository, RifaRepository>();
+
+            services.AddTransient<IRifaService, RifaService>();
         }
     }
 }
