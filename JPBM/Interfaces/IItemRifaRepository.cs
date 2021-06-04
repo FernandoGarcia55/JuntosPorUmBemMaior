@@ -7,5 +7,6 @@ namespace JPBM.Interfaces
     public interface IItemRifaRepository : IGenericRepository<ItemRifa>
     {
         Task <IReadOnlyList<ItemRifa>> ListarPorRifaId(int rifaId);
+        Task<IReadOnlyList<int>> BulkInsert(List<ItemRifa> itensRifa);
     }
 }

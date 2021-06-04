@@ -48,5 +48,19 @@ namespace JPBM.Repository
                 return result;
             }
         }
+
+        public async Task<List<int>> BulkInsertAsync(string query, List<T> itens)
+        {
+            var result = new List<int>();
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                foreach (var item in itens)
+                    result.Add(await connection.ExecuteAsync(query, item));
+
+                return result;
+            }
+        }
     }
 }

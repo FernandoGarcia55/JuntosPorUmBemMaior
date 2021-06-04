@@ -11,13 +11,32 @@ namespace JPBM.ViewModels
         public ClienteViewModel Vendedor { get; set; }
         public ClienteViewModel Cliente { get; set; }
         public short NumeroEscolhido { get; set; }
-        public StatusAtivo Sorteado { get; set; }
-        public StatusPagamento StatusPagamento { get; set; }
-        public StatusAtivo Ativo { get; set; }
-        public DateTime DataCadastro { get; set; }
+        public StatusAtivo Sorteado { get; set; } = StatusAtivo.Nao;
+        public StatusPagamento StatusPagamento { get; set; } = StatusPagamento.AguardandoPagamento;
+        public StatusAtivo Ativo { get; set; } = StatusAtivo.Sim;
+        public DateTime DataCadastro { get; set; } = DateTime.Now;
         public DateTime? DataPagamento { get; set; }
         public DateTime? DataAlteracao { get; set; }
         public DateTime? DataInativacao { get; set; }
+
+        internal ItemRifa MapToEntity()
+        {
+            return new ItemRifa
+            {
+                ItemRifaId = ItemRifaId,
+                RifaId = RifaId,
+                VendedorId = Vendedor.ClienteId,
+                ClienteId = Cliente.ClienteId,
+                NumeroEscolhido = NumeroEscolhido,
+                Sorteado = Convert.ToBoolean((byte)Sorteado),
+                StatusPagamentoId = (byte)StatusPagamento,
+                Ativo = Convert.ToBoolean((byte)Ativo),
+                DataCadastro = DataCadastro,
+                DataPagamento = DataPagamento,
+                DataAlteracao = DataAlteracao,
+                DataInativacao = DataInativacao
+            };
+        }
 
         internal static ItemRifaViewModel MapFromEntity(ItemRifa item)
         {

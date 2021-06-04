@@ -33,6 +33,27 @@ namespace JPBM.Repository
                                         )", entity);
         }
 
+        public async Task<IReadOnlyList<int>> BulkInsert(List<ItemRifa> itensRifa)
+        {
+            return await BulkInsertAsync(@"INSERT INTO ItemRifa(
+                                            RifaId, 
+                                            VendedorId, 
+                                            ClienteId, 
+                                            NumeroEscolhido, 
+                                            StatusPagamentoId, 
+                                            DataCadastro, 
+                                            DataPagamento
+                                        ) VALUES (
+                                            @RifaId, 
+                                            @VendedorId, 
+                                            @ClienteId, 
+                                            @NumeroEscolhido, 
+                                            @StatusPagamentoId, 
+                                            @DataCadastro, 
+                                            @DataPagamento
+                                        )", itensRifa);
+        }
+
         public async Task<int> DeleteAsync(int id)
         {
             return await ExecuteAsync("DELETE FROM ItemRifa WHERE ItemRifaId = @ItemRifaId", new { ItemRifaId = id });
