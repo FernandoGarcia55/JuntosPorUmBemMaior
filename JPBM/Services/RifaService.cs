@@ -10,13 +10,11 @@ namespace JPBM.Services
     {
         private readonly IRifaRepository _rifaRepository;
         private readonly IItemRifaRepository _itemRifaRepository;
-        private readonly IClienteRepository _clienteRepository;
 
-        public RifaService(IRifaRepository rifaRepository, IItemRifaRepository itemRifaRepository, IClienteRepository clienteRepository)
+        public RifaService(IRifaRepository rifaRepository, IItemRifaRepository itemRifaRepository)
         {
             _rifaRepository = rifaRepository;
             _itemRifaRepository = itemRifaRepository;
-            _clienteRepository = clienteRepository;
         }
 
         public async Task<bool> Criar(RifaViewModel rifaViewModel)
@@ -36,11 +34,10 @@ namespace JPBM.Services
             return rifasViewModel;
         }
 
-        public async Task<RifaViewModel> ObterComItensAsync(int rifaId)
+        public async Task<RifaViewModel> ObterComItensAsync(int rifaId, List<ClienteViewModel> clientes, List<ClienteViewModel> vendedores)
         {
             var rifa = await _rifaRepository.GetByIdAsync(rifaId);
             var itensRifa = await _itemRifaRepository.ListarPorRifaId(rifaId);
-            var clientes = await _clienteRepository.GetAllAsync();
 
             var rifaViewModel = RifaViewModel.MapFromEntity(rifa);
             rifaViewModel.ItensRifa = new List<ItemRifaViewModel>(itensRifa.Count);
@@ -48,8 +45,8 @@ namespace JPBM.Services
             foreach(var item in itensRifa)
             {
                 var itemRifa = ItemRifaViewModel.MapFromEntity(item);
-                itemRifa.Cliente = ClienteViewModel.MapFromEntity(clientes.First(c=> c.ClienteId == item.ClienteId));
-                itemRifa.Vendedor = ClienteViewModel.MapFromEntity(clientes.First(c => c.ClienteId == item.ClienteId));
+                itemRifa.Cliente = clientes.FirstOrDefault(c=> c.ClienteId == item.ClienteId);
+                itemRifa.Vendedor = vendedores.FirstOrDefault(v => v.ClienteId == item.ClienteId);
                 rifaViewModel.ItensRifa.Add(itemRifa);
             }
             return rifaViewModel;

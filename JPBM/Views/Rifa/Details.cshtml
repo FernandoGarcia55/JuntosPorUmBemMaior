@@ -1,4 +1,7 @@
-﻿@model JPBM.ViewModels.RifaViewModel
+﻿@using System.Collections.Generic;
+@using vm = JPBM.ViewModels;
+@model Tuple<vm.RifaViewModel, List<vm.ClienteViewModel>, List<vm.ClienteViewModel>>
+@*@model JPBM.ViewModels.RifaViewModel*@
 
 @{
     ViewData["Title"] = "Detalhes Rifa";
@@ -10,47 +13,71 @@
     <hr />
     <dl class="d-flex">
         <dt>
-            @Html.DisplayNameFor(model => model.Nome)
+            @Html.DisplayNameFor(model => model.Item1.Nome)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Nome)
+            @Html.DisplayFor(model => model.Item1.Nome)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Premio)
+            @Html.DisplayNameFor(model => model.Item1.Premio)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Premio)
+            @Html.DisplayFor(model => model.Item1.Premio)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Tamanho)
+            @Html.DisplayNameFor(model => model.Item1.Tamanho)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Tamanho)/@Model.GetNumerosRestantes()
+            @Html.DisplayFor(model => model.Item1.Tamanho)/@Model.Item1.GetNumerosRestantes()
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Valor)
+            @Html.DisplayNameFor(model => model.Item1.Valor)
         </dt>
         <dd>
-            R$ @Html.DisplayFor(model => model.Valor)
+            R$ @Html.DisplayFor(model => model.Item1.Valor)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.DataInicio)
+            @Html.DisplayNameFor(model => model.Item1.DataInicio)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.DataInicio)
+            @Html.DisplayFor(model => model.Item1.DataInicio)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.DataSorteio)
+            @Html.DisplayNameFor(model => model.Item1.DataSorteio)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.DataSorteio)
+            @Html.DisplayFor(model => model.Item1.DataSorteio)
         </dd>
     </dl>
 </div>
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            <label for="cliente">Cliente:</label>
+            <select id="cliente" class="selectpicker" data-live-search="true">
+                <option value="" selected disabled hidden>Selecione</option>
+                @foreach (var cliente in @Model.Item2)
+                {
+                    <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label for="vendedor">Vendedor:</label>
+            <select id="vendedor" class="selectpicker" data-live-search="true">
+                <option value="" selected disabled hidden>Selecione</option>
+                @foreach (var cliente in @Model.Item3)
+                {
+                    <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
 <div class="principal">
-    @for (var numero = 1; numero <= Model.Tamanho; numero++)
+    @for (var numero = 1; numero <= Model.Item1.Tamanho; numero++)
     {
-        var itemRifaEscolhido = Model.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim);
+        var itemRifaEscolhido = Model.Item1.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim);
         @if (itemRifaEscolhido == null)
         {
             <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero)">
@@ -117,6 +144,7 @@
         font-weight: bolder;
         background: lightgray;
     }
+
         .aguardandoPagamento:hover {
             cursor: not-allowed;
         }
@@ -125,6 +153,7 @@
         font-weight: bolder;
         background: gray;
     }
+
         .pago:hover {
             cursor: not-allowed;
         }
@@ -139,7 +168,7 @@
    }
 
     function selecionarNumero(id) {
-        var divClassList = document.getElementById(id).classList;
+        let divClassList = document.getElementById(id).classList;
 
         if (!numerosEscolhidos.find(x => x === id)) {
             numerosEscolhidos.push(id);
@@ -150,16 +179,34 @@
         }
     }
 
+    function obterCliente() {
+        const clienteId = document.getElementById("cliente").value;
+        return clienteId;
+    }
+
+    function obterVendedor() {
+        const vendedorId = document.getElementById("vendedor").value;
+        return vendedorId;
+    }
+
     function preencherItensRifa() {
-        let itensRifa = numerosEscolhidos.map(numero => ({
-            RifaId: @Model.RifaId,
-            NumeroEscolhido: numero
+        const clienteId = obterCliente();
+        const vendedorId = obterVendedor();
+        const itensRifa = numerosEscolhidos.map(numero => ({
+            RifaId: @Model.Item1.RifaId,
+            NumeroEscolhido: numero,
+            Cliente: {
+                ClienteId: clienteId
+            },
+            Vendedor: {
+                ClienteId: vendedorId
+            }
         }));
 
         return itensRifa;
     }
 
-    function postReservarNumeros() {        
+    function postReservarNumeros() {
         $.ajax({
             url: '/ItemRifa/ReservarNumeros',
             type: 'POST',

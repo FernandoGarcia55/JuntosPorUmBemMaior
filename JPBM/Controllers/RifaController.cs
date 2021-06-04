@@ -2,6 +2,8 @@
 using JPBM.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace JPBM.Controllers
@@ -9,10 +11,12 @@ namespace JPBM.Controllers
     public class RifaController : Controller
     {
         private readonly IRifaService _rifaService;
+        private readonly IClienteService _clienteService;
 
-        public RifaController(IRifaService rifaService)
+        public RifaController(IRifaService rifaService, IClienteService clienteService)
         {
             _rifaService = rifaService;
+            _clienteService = clienteService;
         }
 
         // GET: RifaController
@@ -25,8 +29,12 @@ namespace JPBM.Controllers
         // GET: RifaController/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var rifaViewModel = await _rifaService.ObterComItensAsync(id);
-            return View(rifaViewModel);
+            var clientesViewModel = await _clienteService.ListarClientesAsync();
+            var vendedoresViewModel = _clienteService.ListarVendedores(clientesViewModel);
+            var rifaViewModel = await _rifaService.ObterComItensAsync(id, clientesViewModel, vendedoresViewModel);
+            var tupleModel = new Tuple<RifaViewModel, List<ClienteViewModel>, List<ClienteViewModel>>(rifaViewModel, clientesViewModel, vendedoresViewModel);
+
+            return View(tupleModel);
         }
 
         // GET: RifaController/Create

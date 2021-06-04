@@ -13,6 +13,11 @@ namespace JPBM.ViewModels
         public DateTime DataCadastro { get; set; }
         public DateTime DataAlteracao { get; set; }
 
+        public string GetNomeCompleto()
+        {
+            return $"{Nome} {Sobrenome}";
+        }
+
         internal static ClienteViewModel MapFromEntity(Cliente cliente)
         {
             return new ClienteViewModel

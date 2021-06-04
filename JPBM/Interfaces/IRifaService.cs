@@ -8,6 +8,6 @@ namespace JPBM.Interfaces
     {
         Task<IReadOnlyList<RifaViewModel>> ListarAsync();
         Task<bool> Criar(RifaViewModel rifaViewModel);
-        Task<RifaViewModel> ObterComItensAsync(int rifaId);
+        Task<RifaViewModel> ObterComItensAsync(int rifaId, List<ClienteViewModel> clientes, List<ClienteViewModel> vendedores);
     }
 }

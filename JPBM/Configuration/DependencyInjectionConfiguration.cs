@@ -17,6 +17,7 @@ namespace JPBM.Configuration
             services.AddTransient<IRifaRepository, RifaRepository>();
 
             services.AddTransient<IRifaService, RifaService>();
+            services.AddTransient<IClienteService, ClienteService>();
         }
     }
 }
