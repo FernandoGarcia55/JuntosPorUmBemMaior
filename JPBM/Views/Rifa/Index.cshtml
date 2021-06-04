@@ -13,7 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.RifaId)
+                @Html.DisplayNameFor(model => model.DataCadastro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataInicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataSorteio)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Tamanho)
@@ -30,15 +36,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.StatusRifa)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataCadastro)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataInicio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataSorteio)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -46,7 +43,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.RifaId)
+                @Html.DisplayFor(modelItem => item.DataCadastro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataInicio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataSorteio)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Tamanho)
@@ -64,16 +67,7 @@
                 @Html.DisplayFor(modelItem => item.StatusRifa)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DataCadastro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataSorteio)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new {  id=item.RifaId }) |
+                @Html.ActionLink("Edit", "Edit", new { id = item.RifaId }) |
                 @Html.ActionLink("Details", "Details", new { id = item.RifaId }) |
                 @Html.ActionLink("Delete", "Delete", new { id = item.RifaId })
             </td>

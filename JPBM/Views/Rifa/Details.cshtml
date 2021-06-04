@@ -50,28 +50,26 @@
         </dd>
     </dl>
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <div>
-            <label for="cliente">Cliente:</label>
-            <select id="cliente" class="selectpicker" data-live-search="true">
-                <option value="" selected disabled hidden>Selecione</option>
-                @foreach (var cliente in @Model.Item2)
-                {
-                    <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
-                }
-            </select>
-        </div>
-        <div>
-            <label for="vendedor">Vendedor:</label>
-            <select id="vendedor" class="selectpicker" data-live-search="true">
-                <option value="" selected disabled hidden>Selecione</option>
-                @foreach (var cliente in @Model.Item3)
-                {
-                    <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
-                }
-            </select>
-        </div>
+<div class="row justify-content-md-center">
+    <div class="col-md-3 col-sm-12">
+        <label for="cliente">Cliente:</label>
+        <select id="cliente" class="selectpicker" data-live-search="true">
+            <option value="" selected disabled hidden>Selecione</option>
+            @foreach (var cliente in @Model.Item2)
+            {
+                <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3 col-sm-12">
+        <label for="vendedor">Vendedor:</label>
+        <select id="vendedor" class="selectpicker" data-live-search="true">
+            <option value="" selected disabled hidden>Selecione</option>
+            @foreach (var cliente in @Model.Item3)
+            {
+                <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+            }
+        </select>
     </div>
 </div>
 <div class="principal">
