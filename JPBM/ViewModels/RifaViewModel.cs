@@ -1,15 +1,17 @@
 ﻿using JPBM.Entidades;
 using JPBM.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace JPBM.ViewModels
 {
     public class RifaViewModel
     {
         public int RifaId { get; set; }
-        public ushort Tamanho { get; set; }
+        public ushort Tamanho { get; set; }     
         public string Nome { get; set; }
 
         [DisplayName("Prêmio")]
@@ -30,6 +32,13 @@ namespace JPBM.ViewModels
         [DisplayName("Sorteio")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime DataSorteio { get; set; }
+
+        public List<ItemRifaViewModel> ItensRifa { get; set; }
+
+        public int GetNumerosRestantes()
+        {
+            return Tamanho - ItensRifa.Count(x => x.Ativo == StatusAtivo.Sim);
+        }
 
         public Rifa MapToEntity()
         {

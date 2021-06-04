@@ -75,6 +75,25 @@ namespace JPBM.Repository
                                                      WHERE ItemRifaId = @ItemRifaId", new { ItemRifaId = id });
         }
 
+        public async Task<IReadOnlyList<ItemRifa>> ListarPorRifaId(int rifaId)
+        {
+            return await QueryAsync(@"SELECT
+                                        ItemRifaId,
+                                        RifaId, 
+                                        VendedorId, 
+                                        ClienteId, 
+                                        NumeroEscolhido, 
+                                        Sorteado, 
+                                        StatusPagamentoId, 
+                                        Ativo,
+                                        DataCadastro, 
+                                        DataPagamento
+                                        DataAlteracao,
+                                        DataInativacao
+                                      FROM ItemRifa (NOLOCK)
+                                      WHERE RifaId = @RifaId", new { RifaId = rifaId });
+        }
+
         public async Task<int> UpdateAsync(ItemRifa entity)
         {
             return await ExecuteAsync(@"UPDATE ItemRifa

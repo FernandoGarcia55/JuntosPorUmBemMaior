@@ -1,0 +1,179 @@
+﻿@model JPBM.ViewModels.RifaViewModel
+
+@{
+    ViewData["Title"] = "Detalhes Rifa";
+}
+
+<h2>Detalhes Rifa</h2>
+
+<div>
+    <hr />
+    <dl class="d-flex">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Premio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Premio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Tamanho)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tamanho)/@Model.GetNumerosRestantes()
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Valor)
+        </dt>
+        <dd>
+            R$ @Html.DisplayFor(model => model.Valor)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DataInicio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DataInicio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DataSorteio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DataSorteio)
+        </dd>
+    </dl>
+</div>
+<div class="principal">
+    @for (var numero = 1; numero <= Model.Tamanho; numero++)
+    {
+        var itemRifaEscolhido = Model.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim);
+        @if (itemRifaEscolhido == null)
+        {
+            <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero)">
+                @numero
+            </div>
+        }
+        else
+        {
+            if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
+            {
+                <div id="@numero" class="item pago">
+                    @numero
+                </div>
+            }
+            else
+            {
+                <div id="@numero" class="item aguardandoPagamento">
+                    @numero
+                </div>
+            }
+        }
+    }
+</div>
+<div>
+    <input type="button" class="button btn-primary" value="Reservar Números" onclick="postReservarNumeros()" />
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
+<style>
+    dd {
+        margin-left: 5px;
+        margin-right: 10px;
+    }
+
+    .principal {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .item {
+        margin: 5px;
+        background: lightgreen;
+        text-align: center;
+        font-size: 1.5em;
+        width: 50px;
+    }
+
+    .disponivel:hover {
+        cursor: pointer;
+        background-color: green;
+        font-weight: bolder;
+    }
+
+    .selecionado {
+        background-color: green;
+        font-weight: bolder;
+    }
+
+    .aguardandoPagamento {
+        font-weight: bolder;
+        background: lightgray;
+    }
+        .aguardandoPagamento:hover {
+            cursor: not-allowed;
+        }
+
+    .pago {
+        font-weight: bolder;
+        background: gray;
+    }
+        .pago:hover {
+            cursor: not-allowed;
+        }
+</style>
+<script type="text/javascript">
+    let numerosEscolhidos = new Array();
+
+    function getToken() {
+        let token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+   }
+
+    function selecionarNumero(id) {
+        var divClassList = document.getElementById(id).classList;
+
+        if (!numerosEscolhidos.find(x => x === id)) {
+            numerosEscolhidos.push(id);
+            divClassList.add("selecionado");
+        } else {
+            numerosEscolhidos = numerosEscolhidos.filter(x => x !== id);
+            divClassList.remove("selecionado");
+        }
+    }
+
+    function preencherItensRifa() {
+        let itensRifa = numerosEscolhidos.map(numero => ({
+            RifaId: @Model.RifaId,
+            NumeroEscolhido: numero
+        }));
+
+        return itensRifa;
+    }
+
+    function postReservarNumeros() {        
+        $.ajax({
+            url: '/ItemRifa/ReservarNumeros',
+            type: 'POST',
+            data: {
+                __RequestVerificationToken: getToken(),
+                itensRifaViewModel: preencherItensRifa()
+            },
+            success: function () {
+                alert("Sucesso.");
+                location.reload();
+            },
+            error: function (jqXHR, exception) {
+                alert('Erro.');
+            }
+        });
+    }
+</script>

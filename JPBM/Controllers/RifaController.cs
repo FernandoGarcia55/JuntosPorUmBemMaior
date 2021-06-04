@@ -23,9 +23,10 @@ namespace JPBM.Controllers
         }
 
         // GET: RifaController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            var rifaViewModel = await _rifaService.ObterComItensAsync(id);
+            return View(rifaViewModel);
         }
 
         // GET: RifaController/Create

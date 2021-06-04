@@ -29,12 +29,12 @@ namespace JPBM.Repository
                 return result;
             }
         }
-        public async Task<IReadOnlyList<T>> QueryAsync(string query)
+        public async Task<IReadOnlyList<T>> QueryAsync(string query, object parameters = null)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                var result = await connection.QueryAsync<T>(query);
+                var result = await connection.QueryAsync<T>(query, parameters);
                 return result.ToList();
             }
         }
