@@ -1,19 +1,30 @@
-﻿using System;
+﻿using JPBM.Entidades;
+using JPBM.Interfaces;
+using JPBM.Repository;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace JPBM
 {
-    public class RifaRepository
+    public class RifaRepository : BaseRepository<Rifa>, IRifaRepository
     {
+        public RifaRepository(IConfiguration configuration) : base(configuration)
+        {
+        }
+
+        public RifaRepository()
+        {
+        }
+
         public static string SQLConnection { get; private set; }
         public static string GetSQLConnection()
         {
             SQLConnection = @"Data Source=jpbmserver.database.windows.net;Initial Catalog = JPBM_DB; Persist Security Info = False;User Id=juntosAdmin;Password=juntos$M; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 180;";
             //SQLConnection = @"Data Source=NOTE206;Initial Catalog=JPBMDataBase;Integrated Security=True;Connect Timeout=30";
-            
+
             return SQLConnection;
         }
 
@@ -47,7 +58,7 @@ namespace JPBM
 
         public void Update(Rifa rifa)
         {
-           
+
             string sql = "UPDATE dbo.RIFA SET pago=@Pago, nomeID=@Nome, vendido = @Vendido WHERE numero = @Numero";
 
             using (var con = new SqlConnection(GetSQLConnection()))
@@ -89,7 +100,7 @@ namespace JPBM
                     {
                         while (reader.Read())
                         {
-                            rifas.Add(new Rifa((int)reader["id"], (int)reader["numero"], (int)reader["nomeID"], (bool)reader["pago"], (bool)reader["vendido"]) { });
+                            rifas.Add(new Rifa { Id = (int)reader["id"], Numero = (int)reader["numero"], NomeId = (int)reader["nomeID"], Pago = (bool)reader["pago"], Vendido = (bool)reader["vendido"] });
                         }
                     }
                     con.Close(); con.Dispose();
@@ -142,6 +153,80 @@ namespace JPBM
             listaS.Add(lista);
 
             return listaS;
+        }
+
+        public async Task<int> AddAsync(Rifa entity)
+        {
+            return await ExecuteAsync(@"INSERT INTO Rifa(
+                                            Tamanho,
+                                            Nome,
+                                            Premio,
+                                            Valor,
+                                            StatusRifaId,
+                                            DataCadastro,
+                                            DataInicio,
+                                            DataSorteio
+                                        ) VALUES (
+                                            @Tamanho,
+                                            @Nome,
+                                            @Premio,
+                                            @Valor,
+                                            @StatusRifaId,
+                                            @DataCadastro,
+                                            @DataInicio,
+                                            @DataSorteio
+                                        )", entity);
+        }
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            return await ExecuteAsync("DELETE FROM Rifa WHERE RifaId = @RifaId", new { RifaId = id });
+        }
+
+        public async Task<IReadOnlyList<Rifa>> GetAllAsync()
+        {
+            return await QueryAsync(@"SELECT
+                                        RifaId,
+                                        Tamanho,
+                                        Nome,
+                                        Premio,
+                                        Valor,
+                                        StatusRifaId,
+                                        DataCadastro,
+                                        DataInicio,
+                                        DataSorteio
+                                      FROM Rifa (NOLOCK)");
+        }
+
+        public async Task<Rifa> GetByIdAsync(int id)
+        {
+            return await QuerySingleOrDefaultAsync(@"SELECT
+                                                        RifaId,
+                                                        Tamanho,
+                                                        Nome,
+                                                        Premio,
+                                                        Valor,
+                                                        StatusRifaId,
+                                                        DataCadastro,
+                                                        DataInicio,
+                                                        DataSorteio
+                                                     FROM Rifa (NOLOCK)
+                                                     WHERE RifaId = @RifaId", new { RifaId = id });
+        }
+
+        public async Task<int> UpdateAsync(Rifa entity)
+        {
+            return await ExecuteAsync(@"UPDATE Rifa
+                                          SET
+                                            Tamanho = @Tamanho,
+                                            Nome = @Nome,
+                                            Premio = @Premio,
+                                            Valor = @Valor,
+                                            StatusRifaId = @StatusRifaId,
+                                            DataCadastro = @DataCadastro,
+                                            DataInicio = @DataInicio,
+                                            DataSorteio = @DataSorteio
+                                        WHERE RifaId = @RifaId", entity);
         }
 
 
