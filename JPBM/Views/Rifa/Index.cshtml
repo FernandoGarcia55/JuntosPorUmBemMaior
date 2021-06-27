@@ -40,38 +40,39 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataCadastro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataSorteio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tamanho)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Premio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Valor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StatusRifa)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.RifaId }) |
-                @Html.ActionLink("Details", "Details", new { id = item.RifaId }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.RifaId })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataCadastro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataSorteio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tamanho)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Premio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Valor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StatusRifa)
+                </td>
+                <td>
+                    @Html.ActionLink("", "Details", new { id = item.RifaId }, new { @class = "glyphicon glyphicon-list", title = "Detalhes", style = "margin-right: 5px; color: black" })
+                    @Html.ActionLink("", "Edit", new { id = item.RifaId }, new { @class = "glyphicon glyphicon-pencil ", title = "Editar", style = "margin-right: 5px; color: black" })
+                    @Html.ActionLink("", "Delete", new { id = item.RifaId }, new { @class = "glyphicon glyphicon-trash", title = "Excluir", style = "color: black" })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
