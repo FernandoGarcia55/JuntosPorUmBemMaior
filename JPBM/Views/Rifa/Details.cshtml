@@ -28,7 +28,7 @@
             @Html.DisplayNameFor(model => model.Item1.Tamanho)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Item1.Tamanho)/@Model.Item1.GetNumerosRestantes()
+            @Model.Item1.GetNumerosRestantes() / @Html.DisplayFor(model => model.Item1.Tamanho)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Item1.Valor)
