@@ -50,28 +50,6 @@
         </dd>
     </dl>
 </div>
-<div class="row justify-content-md-center">
-    <div class="col-md-3 col-sm-12">
-        <label for="cliente">Cliente:</label>
-        <select id="cliente" class="selectpicker" data-live-search="true">
-            <option value="" selected disabled hidden>Selecione</option>
-            @foreach (var cliente in @Model.Item2)
-            {
-                <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
-            }
-        </select>
-    </div>
-    <div class="col-md-3 col-sm-12">
-        <label for="vendedor">Vendedor:</label>
-        <select id="vendedor" class="selectpicker" data-live-search="true">
-            <option value="" selected disabled hidden>Selecione</option>
-            @foreach (var cliente in @Model.Item3)
-            {
-                <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
-            }
-        </select>
-    </div>
-</div>
 <div class="principal">
     @for (var numero = 1; numero <= Model.Item1.Tamanho; numero++)
     {
@@ -82,30 +60,78 @@
                 @numero
             </div>
         }
+        else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
+        {
+            <div id="@numero" class="item pago">
+                @numero
+            </div>
+        }
         else
         {
-            if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
-            {
-                <div id="@numero" class="item pago">
-                    @numero
-                </div>
-            }
-            else
-            {
-                <div id="@numero" class="item aguardandoPagamento">
-                    @numero
-                </div>
-            }
+            <div id="@numero" class="item aguardandoPagamento">
+                @numero
+            </div>
         }
+
     }
 </div>
-<div>
-    <input type="button" class="button btn-primary" value="Reservar Números" onclick="postReservarNumeros()" />
-</div>
+
+<button id="reservaModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" disabled>
+    Reservar
+</button>
+
 <div>
     @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
     <a asp-action="Index">Back to List</a>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Reservar estes números?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-md-center">
+                    <label for="cliente">Cliente:</label>
+                    <select id="cliente" class="selectpicker" data-live-search="true" onchange="habilitarReserva()">
+                        <option value="" selected disabled hidden>Selecione</option>
+                        @foreach (var cliente in @Model.Item2)
+                        {
+                            <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+                        }
+                    </select>
+                    <label for="vendedor">Vendedor:</label>
+                    <select id="vendedor" class="selectpicker" data-live-search="true" onchange="habilitarReserva()">
+                        <option value="" selected disabled hidden>Selecione</option>
+                        @foreach (var cliente in @Model.Item3)
+                        {
+                            <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <br />
+                    <p><span id="qtdNumerosEscolhidos">0</span> número(s) selecionado(s): <span id="numerosEscolhidos">0</span>.</p>
+                    <p>Valor Total: <span id="valorTotal">0</span>.</p>
+                    <input type="checkbox" id="pagamentoEfetuado" name="pagamentoEfetuado" />
+                    <label for="pagamentoEfetuado"> Pagamento já realizado.</label>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+                <button type="button" id="reservarNumeros" class="btn btn-primary" onclick="postReservarNumeros()" disabled>Sim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <style>
     dd {
         margin-left: 5px;
@@ -163,18 +189,78 @@
         let token = '@Html.AntiForgeryToken()';
         token = $(token).val();
         return token;
-   }
+    }
+
+    function habilitarReserva() {
+        const clienteIndex = document.getElementById("cliente").selectedIndex;
+        const vendedorIndex = document.getElementById("vendedor").selectedIndex;
+
+        let reservarNumerosBtn = document.getElementById("reservarNumeros");
+        reservarNumerosBtn.disabled = !(clienteIndex > 0 && vendedorIndex > 0);
+    }
+
+    function habilitarReservaModal() {
+        let reservaModalBtn = document.getElementById("reservaModal");
+        reservaModalBtn.disabled = numerosEscolhidos.length === 0;
+    }
+
+    function obterTextoNumerosEscolhidos() {
+        const numerosEscolhidosSpan = document.getElementById("numerosEscolhidos");
+        const texto = document.createTextNode(numerosEscolhidos.sort().join(', '));
+
+        if (numerosEscolhidosSpan.firstChild)
+            numerosEscolhidosSpan.removeChild(numerosEscolhidosSpan.firstChild);
+        numerosEscolhidosSpan.appendChild(texto);
+    }
+
+    function obterTextoQuantidadeNumerosEscolhidos() {
+        const qtdNumerosEscolhidosSpan = document.getElementById("qtdNumerosEscolhidos");
+        const texto = document.createTextNode(numerosEscolhidos.length);
+
+        if (qtdNumerosEscolhidosSpan.firstChild)
+            qtdNumerosEscolhidosSpan.removeChild(qtdNumerosEscolhidosSpan.firstChild);
+        qtdNumerosEscolhidosSpan.appendChild(texto);
+    }
+
+    function obterValorTotal() {
+        var valorMVC = @Model.Item1.Valor.ToString().Replace(",", ".");
+        const valorMultiplicado = numerosEscolhidos.length * valorMVC;
+        const valorFormatado = valorMultiplicado.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+        const texto = document.createTextNode(valorFormatado);
+
+        const valorTotalSpan = document.getElementById("valorTotal");
+        if (valorTotalSpan.firstChild)
+            valorTotalSpan.removeChild(valorTotalSpan.firstChild);
+        valorTotalSpan.appendChild(texto);
+    }
+
+    function obterInformacoesModal() {
+        obterTextoNumerosEscolhidos();
+        obterTextoQuantidadeNumerosEscolhidos();
+        obterValorTotal();
+    }
+
+    function adicionarNumero(divClassList, id) {
+        numerosEscolhidos.push(id);
+        divClassList.add("selecionado");
+    }
+
+    function removerNumero(divClassList, id) {
+        numerosEscolhidos = numerosEscolhidos.filter(x => x !== id);
+        divClassList.remove("selecionado");
+    }
 
     function selecionarNumero(id) {
         let divClassList = document.getElementById(id).classList;
 
         if (!numerosEscolhidos.find(x => x === id)) {
-            numerosEscolhidos.push(id);
-            divClassList.add("selecionado");
+            adicionarNumero(divClassList, id)
         } else {
-            numerosEscolhidos = numerosEscolhidos.filter(x => x !== id);
-            divClassList.remove("selecionado");
+            removerNumero(divClassList, id)
         }
+
+        habilitarReservaModal();
+        obterInformacoesModal();
     }
 
     function obterCliente() {
@@ -187,12 +273,23 @@
         return vendedorId;
     }
 
+    function pagamentoEfetuadoChecked() {
+        return document.getElementById('pagamentoEfetuado').checked;
+    }
+
+    function validarStatusPagamento() {
+        return pagamentoEfetuadoChecked() ? 'PagamentoRecebido' : 'AguardandoPagamento';
+    };
+
     function preencherItensRifa() {
+        const statusPagamento = validarStatusPagamento();
+
         const clienteId = obterCliente();
         const vendedorId = obterVendedor();
         const itensRifa = numerosEscolhidos.map(numero => ({
             RifaId: @Model.Item1.RifaId,
             NumeroEscolhido: numero,
+            StatusPagamento: statusPagamento,
             Cliente: {
                 ClienteId: clienteId
             },
