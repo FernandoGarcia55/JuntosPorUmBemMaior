@@ -1,8 +1,39 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>e517427c-f8d6-4350-95af-8152dd0013c6</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\lib\jquery-validation-unobtrusive\**" />
+    <Compile Remove="wwwroot\lib\jquery-validation\**" />
+    <Compile Remove="wwwroot\lib\jquery\**" />
+    <Content Remove="wwwroot\lib\jquery-validation-unobtrusive\**" />
+    <Content Remove="wwwroot\lib\jquery-validation\**" />
+    <Content Remove="wwwroot\lib\jquery\**" />
+    <EmbeddedResource Remove="wwwroot\lib\jquery-validation-unobtrusive\**" />
+    <EmbeddedResource Remove="wwwroot\lib\jquery-validation\**" />
+    <EmbeddedResource Remove="wwwroot\lib\jquery\**" />
+    <None Remove="wwwroot\lib\jquery-validation-unobtrusive\**" />
+    <None Remove="wwwroot\lib\jquery-validation\**" />
+    <None Remove="wwwroot\lib\jquery\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.css" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.css.map" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.min.css" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.min.css.map" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-reboot.css" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-reboot.css.map" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-reboot.min.css" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap-reboot.min.css.map" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap.css" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap.css.map" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap.min.css" />
+    <Content Remove="C:\Users\lucas.lins\.nuget\packages\bootstrap\4.5.3\contentFiles\any\any\wwwroot\css\bootstrap.min.css.map" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="wwwroot\bower_components\animate.css\css\animate.css" />
@@ -803,36 +834,6 @@
     <None Include="wwwroot\js\vertical\menu\menu-static.js" />
     <None Include="wwwroot\js\vertical\vertical-layout.js" />
     <None Include="wwwroot\js\vertical\vertical-layout.min.js" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-theme.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-theme.min.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\fonts\glyphicons-halflings-regular.svg" />
-    <None Include="wwwroot\lib\bootstrap\dist\fonts\glyphicons-halflings-regular.woff2" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.js" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.js.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map" />
-    <None Include="wwwroot\lib\bootstrap\dist\js\npm.js" />
-    <None Include="wwwroot\lib\bootstrap\LICENSE" />
-    <None Include="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
-    <None Include="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
-    <None Include="wwwroot\lib\jquery-validation\dist\additional-methods.js" />
-    <None Include="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
-    <None Include="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
-    <None Include="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" />
-    <None Include="wwwroot\lib\jquery-validation\LICENSE.md" />
-    <None Include="wwwroot\lib\jquery\dist\jquery.js" />
-    <None Include="wwwroot\lib\jquery\dist\jquery.min.js" />
-    <None Include="wwwroot\lib\jquery\dist\jquery.min.map" />
     <None Include="wwwroot\pages\accordion\accordion.js" />
     <None Include="wwwroot\pages\accordion\accordion.min.js" />
     <None Include="wwwroot\pages\ace-editor\ace-editor-custom.js" />
@@ -3936,7 +3937,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="bootstrap" Version="4.5.3" />
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
