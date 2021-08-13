@@ -56,13 +56,13 @@
         var itemRifaEscolhido = Model.Item1.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim);
         @if (itemRifaEscolhido == null)
         {
-            <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero)">
+            <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero,'disponivel')">
                 @numero
             </div>
         }
         else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
         {
-            <div id="@numero" class="item pago">
+            <div id="@numero" class="item pago" onclick="selecionarNumero(@itemRifaEscolhido.NumeroEscolhido,'PagamentoRecebido','@itemRifaEscolhido.Cliente.GetNomeCompleto()')">
                 @numero
             </div>
         }
@@ -76,9 +76,14 @@
     }
 </div>
 
-<button id="reservaModal" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled>
-    Reservar
-</button>
+<div>
+    <button id="reservaBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled>
+        Reservar
+    </button>
+    <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#estornarModal" disabled>
+        Estornar
+    </button>
+</div>
 
 <div>
     @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
@@ -113,9 +118,9 @@
                     </select>
                 </div>
                 <div>
-                    <br />
                     <p><span id="qtdNumerosEscolhidos">0</span> número(s) selecionado(s): <span id="numerosEscolhidos">0</span>.</p>
-                    <p>Valor Total: <span id="valorTotal">0</span>.</p>
+                    <br />
+                    <p><b>Valor Total: </b><span id="valorTotal">0</span>.</p>
                     <input type="checkbox" id="pagamentoEfetuado" name="pagamentoEfetuado" />
                     <label for="pagamentoEfetuado"> Pagamento já realizado.</label>
                 </div>
@@ -124,6 +129,31 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
                 <button type="button" id="reservarNumeros" class="btn btn-primary" onclick="postReservarNumeros()" disabled>Sim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="estornarModal" tabindex="-1" aria-labelledby="reservarModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservarModalLabel">Estornar estes números?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p><span id="qtdNumerosEscolhidosEstorno">0</span> número(s) selecionado(s).</p>
+                    <h6>Números por clientes</h6>
+                    <ul id="numerosClientes"></ul>
+                    <br />
+                    <p><b>Valor Total: </b><span id="valorTotalEstorno">0</span>.</p>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button type="button" id="reservarNumeros" class="btn btn-primary" onclick="postEstornarNumeros()">Sim</button>
             </div>
         </div>
     </div>
@@ -144,26 +174,21 @@
     }
 
     .item {
+        cursor: pointer;
         margin: 5px;
-        background: lightgreen;
+        background-color: lightgreen;
         text-align: center;
         font-size: 1.5em;
         width: 50px;
+        box-shadow: 0px 0px 5px gray;
     }
 
     .disponivel:hover {
-        cursor: pointer;
-        background-color: green;
         font-weight: bolder;
-    }
-
-    .selecionado {
-        background-color: green;
-        font-weight: bolder;
+        box-shadow: 0px 0px 5px black;
     }
 
     .aguardandoPagamento {
-        font-weight: bolder;
         background: lightgray;
     }
 
@@ -172,21 +197,24 @@
         }
 
     .pago {
-        font-weight: bolder;
-        background: gray;
+        background-color: lightblue;
     }
 
         .pago:hover {
-            cursor: not-allowed;
+            font-weight: bolder;
+            box-shadow: 0px 0px 5px black;
         }
+
+    .selecionado {
+        font-weight: bolder;
+        box-shadow: 0px 0px 5px black;
+    }
 </style>
 <script type="text/javascript">
     let numerosEscolhidos = new Array();
-
-    function getToken() {
-        let token = '@Html.AntiForgeryToken()';
-        token = $(token).val();
-        return token;
+    const statusPagamento = {
+        aguardandoPagamento: "AguardandoPagamento",
+        pagamentoRecebido: "PagamentoRecebido"
     }
 
     function habilitarReserva() {
@@ -197,89 +225,134 @@
         reservarNumerosBtn.disabled = !(clienteIndex > 0 && vendedorIndex > 0);
     }
 
-    function habilitarReservaModal() {
-        let reservaModalBtn = document.getElementById("reservaModal");
-        reservaModalBtn.disabled = numerosEscolhidos.length === 0;
-    }
-
-    function obterTextoNumerosEscolhidos() {
-        const numerosEscolhidosSpan = document.getElementById("numerosEscolhidos");
-        const texto = document.createTextNode(numerosEscolhidos.sort().join(', '));
-
-        if (numerosEscolhidosSpan.firstChild)
-            numerosEscolhidosSpan.removeChild(numerosEscolhidosSpan.firstChild);
-        numerosEscolhidosSpan.appendChild(texto);
-    }
-
-    function obterTextoQuantidadeNumerosEscolhidos() {
-        const qtdNumerosEscolhidosSpan = document.getElementById("qtdNumerosEscolhidos");
-        const texto = document.createTextNode(numerosEscolhidos.length);
+    function exibirQuantidadeNumerosEscolhidos(quantidade, elementoQtdId) {
+        const qtdNumerosEscolhidosSpan = document.getElementById(elementoQtdId);
+        const texto = document.createTextNode(quantidade);
 
         if (qtdNumerosEscolhidosSpan.firstChild)
             qtdNumerosEscolhidosSpan.removeChild(qtdNumerosEscolhidosSpan.firstChild);
         qtdNumerosEscolhidosSpan.appendChild(texto);
     }
 
-    function obterValorTotal() {
+    function exibirValorTotal(quantidade, elementoValorId) {
         var valorMVC = @Model.Item1.Valor.ToString().Replace(",", ".");
-        const valorMultiplicado = numerosEscolhidos.length * valorMVC;
+        const valorMultiplicado = quantidade * valorMVC;
         const valorFormatado = valorMultiplicado.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
         const texto = document.createTextNode(valorFormatado);
 
-        const valorTotalSpan = document.getElementById("valorTotal");
+        const valorTotalSpan = document.getElementById(elementoValorId);
         if (valorTotalSpan.firstChild)
             valorTotalSpan.removeChild(valorTotalSpan.firstChild);
         valorTotalSpan.appendChild(texto);
     }
 
-    function obterInformacoesModal() {
-        obterTextoNumerosEscolhidos();
-        obterTextoQuantidadeNumerosEscolhidos();
-        obterValorTotal();
-    }
+    function obterInformacoesModal(qtdNumerosDisponiveis, numerosDisponiveis) {
+        function exibirNumerosEscolhidos(numerosDisponiveis) {
+            const numerosEscolhidosSpan = document.getElementById("numerosEscolhidos");
+            const texto = document.createTextNode(numerosDisponiveis.join(', '));
 
-    function adicionarNumero(divClassList, id) {
-        numerosEscolhidos.push(id);
-        divClassList.add("selecionado");
-    }
-
-    function removerNumero(divClassList, id) {
-        numerosEscolhidos = numerosEscolhidos.filter(x => x !== id);
-        divClassList.remove("selecionado");
-    }
-
-    function selecionarNumero(id) {
-        let divClassList = document.getElementById(id).classList;
-
-        if (!numerosEscolhidos.find(x => x === id)) {
-            adicionarNumero(divClassList, id)
-        } else {
-            removerNumero(divClassList, id)
+            if (numerosEscolhidosSpan.firstChild)
+                numerosEscolhidosSpan.removeChild(numerosEscolhidosSpan.firstChild);
+            numerosEscolhidosSpan.appendChild(texto);
         }
 
-        habilitarReservaModal();
-        obterInformacoesModal();
+        exibirNumerosEscolhidos(numerosDisponiveis);
+        exibirQuantidadeNumerosEscolhidos(qtdNumerosDisponiveis, "qtdNumerosEscolhidos");
+        exibirValorTotal(qtdNumerosDisponiveis, "valorTotal");
     }
 
-    function obterCliente() {
-        const clienteId = document.getElementById("cliente").value;
-        return clienteId;
+    function obterInformacoesModalEstorno(qtdItensPagos, itensPagosAgrupados) {
+        function exibirNumerosEscolhidos(itensPagosAgrupados) {
+            const numerosClientesUl = document.getElementById("numerosClientes");
+            numerosClientesUl.innerHTML = "";
+
+            for (const property in itensPagosAgrupados) {
+                const li = document.createElement("li");
+                li.innerHTML = `${property}: ${itensPagosAgrupados[property].join(", ")}.`;
+                numerosClientesUl.appendChild(li);
+            }
+        }
+
+        exibirNumerosEscolhidos(itensPagosAgrupados);
+        exibirQuantidadeNumerosEscolhidos(qtdItensPagos, "qtdNumerosEscolhidosEstorno");
+        exibirValorTotal(qtdItensPagos, "valorTotalEstorno");
     }
 
-    function obterVendedor() {
-        const vendedorId = document.getElementById("vendedor").value;
-        return vendedorId;
-    }
+    function selecionarNumero(numero, status, nomeCliente) {
+        function adicionarNumero(classesDoNumero, item) {
+            numerosEscolhidos.push(item);
+            classesDoNumero.add("selecionado");
+        }
 
-    function pagamentoEfetuadoChecked() {
-        return document.getElementById('pagamentoEfetuado').checked;
-    }
+        function removerNumero(classesDoNumero, item) {
+            numerosEscolhidos = numerosEscolhidos.filter(x => x.numero !== item.numero);
+            classesDoNumero.remove("selecionado");
+        }
 
-    function validarStatusPagamento() {
-        return pagamentoEfetuadoChecked() ? 'PagamentoRecebido' : 'AguardandoPagamento';
-    };
+        function habilitarBotao(qtdNumeros, botaoId) {
+            let botao = document.getElementById(botaoId);
+            botao.disabled = qtdNumeros === 0;
+        }
+
+        function prepararNumerosDisponiveis() {
+            const numerosDisponiveis = numerosEscolhidos
+                .filter(x => x.status === 'disponivel')
+                .map(x => x.numero)
+                .sort();
+            const qtdNumerosDisponiveis = numerosDisponiveis.length;
+
+            habilitarBotao(qtdNumerosDisponiveis, 'reservaBtn');
+            obterInformacoesModal(qtdNumerosDisponiveis, numerosDisponiveis);
+        }
+
+        function prepararItensPagos() {
+            const itensPagos = numerosEscolhidos
+                .filter(x => x.status === statusPagamento.pagamentoRecebido)
+                .sort((primeiro, segundo) => primeiro.nomeCliente.localeCompare(segundo.nomeCliente) || primeiro.numero - segundo.numero);
+            const qtdItensPagos = itensPagos.length;
+            const itensPagosAgrupados = itensPagos.reduce(function (acc, obj) {
+                acc[obj.nomeCliente] = acc[obj.nomeCliente] || [];
+                acc[obj.nomeCliente].push(obj.numero);
+                return acc;
+            }, Object.create(null));
+
+            habilitarBotao(qtdItensPagos, 'estornoBtn');
+            obterInformacoesModalEstorno(qtdItensPagos, itensPagosAgrupados);
+        }
+
+        let item = { numero: numero, status: status, nomeCliente: nomeCliente };
+        let classesDoNumero = document.getElementById(numero).classList;
+
+        !numerosEscolhidos.find(x => x.numero === numero) ?
+            adicionarNumero(classesDoNumero, item) :
+            removerNumero(classesDoNumero, item);
+
+        if(status === 'disponivel')
+            prepararNumerosDisponiveis();
+
+        if (status === statusPagamento.pagamentoRecebido)
+            prepararItensPagos();
+    }
 
     function preencherItensRifa() {
+        function validarStatusPagamento() {
+            function pagamentoEfetuadoChecked() {
+                return document.getElementById('pagamentoEfetuado').checked;
+            }
+
+            return pagamentoEfetuadoChecked() ? statusPagamento.pagamentoRecebido : statusPagamento.aguardandoPagamento;
+        };
+
+        function obterCliente() {
+            const clienteId = document.getElementById("cliente").value;
+            return clienteId;
+        }
+
+        function obterVendedor() {
+            const vendedorId = document.getElementById("vendedor").value;
+            return vendedorId;
+        }
+
         const statusPagamento = validarStatusPagamento();
 
         const clienteId = obterCliente();
@@ -300,6 +373,12 @@
     }
 
     function postReservarNumeros() {
+        function getToken() {
+            let token = '@Html.AntiForgeryToken()';
+            token = $(token).val();
+            return token;
+        }
+
         $.ajax({
             url: '/ItemRifa/ReservarNumeros',
             type: 'POST',
