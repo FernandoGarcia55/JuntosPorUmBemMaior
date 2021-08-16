@@ -8,5 +8,6 @@ namespace JPBM.Interfaces
     {
         Task <IReadOnlyList<ItemRifa>> ListarPorRifaId(int rifaId);
         Task<IReadOnlyList<int>> BulkInsert(List<ItemRifa> itensRifa);
+        Task<int> BulkUpdate(List<ItemRifa> itensRifa);
     }
 }

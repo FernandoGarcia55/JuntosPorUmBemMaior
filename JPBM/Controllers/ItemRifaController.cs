@@ -29,5 +29,20 @@ namespace JPBM.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult> EstornarNumeros([FromBody] List<ItemRifaViewModel> itensRifaViewModel)
+        {
+            try
+            {
+                await _itemRifaService.EstornarNumerosAsync(itensRifaViewModel);
+
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
     }
 }

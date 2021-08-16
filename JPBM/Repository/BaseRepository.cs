@@ -49,7 +49,7 @@ namespace JPBM.Repository
             }
         }
 
-        public async Task<List<int>> BulkInsertAsync(string query, List<T> itens)
+        public async Task<List<int>> BulkAsync(string query, List<T> itens)
         {
             var result = new List<int>();
             using (var connection = new SqlConnection(ConnectionString))

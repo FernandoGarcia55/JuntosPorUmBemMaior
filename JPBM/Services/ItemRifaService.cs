@@ -17,12 +17,26 @@ namespace JPBM.Services
 
         public async Task<bool> ReservarNumerosAsync(List<ItemRifaViewModel> itensRifaViewModel)
         {
-            var itensRifa = new List<ItemRifa>(itensRifaViewModel.Count);
-            foreach (var item in itensRifaViewModel)
-                itensRifa.Add(item.MapToEntity());
+            var itensRifa = ObterEntidade(itensRifaViewModel);
 
             await _itemRifaRepository.BulkInsert(itensRifa);
             return true;
+        }
+
+        public async Task<bool> EstornarNumerosAsync(List<ItemRifaViewModel> itensRifaViewModel)
+        {
+            var itensRifa = ObterEntidade(itensRifaViewModel);
+
+            await _itemRifaRepository.BulkUpdate(itensRifa);
+            return true;
+        }
+
+        private static List<ItemRifa> ObterEntidade(List<ItemRifaViewModel> itensRifaViewModel)
+        {
+            var itensRifa = new List<ItemRifa>(itensRifaViewModel.Count);
+            foreach (var item in itensRifaViewModel)
+                itensRifa.Add(item.MapToEntity());
+            return itensRifa;
         }
     }
 }

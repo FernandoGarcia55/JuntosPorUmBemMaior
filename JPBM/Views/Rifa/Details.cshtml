@@ -62,13 +62,25 @@
         }
         else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
         {
-            <div id="@numero" class="item pago" onclick="selecionarNumero(@itemRifaEscolhido.NumeroEscolhido,'PagamentoRecebido','@itemRifaEscolhido.Cliente.GetNomeCompleto()')">
+            <div id="@numero" class="item pago" onclick="selecionarNumero(
+                                                                @itemRifaEscolhido.NumeroEscolhido,
+                                                                'PagamentoRecebido',
+                                                                '@itemRifaEscolhido.Cliente.GetNomeCompleto()',
+                                                                @itemRifaEscolhido.ItemRifaId,
+                                                                @itemRifaEscolhido.Cliente.ClienteId,
+                                                                @itemRifaEscolhido.Vendedor.ClienteId)">
+                @numero
+            </div>
+        }
+        else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.AguardandoPagamento)
+        {
+            <div id="@numero" class="item aguardandoPagamento">
                 @numero
             </div>
         }
         else
         {
-            <div id="@numero" class="item aguardandoPagamento">
+            <div id="@numero" class="item disponivel estornado" onclick="selecionarNumero(@numero,'disponivel')">
                 @numero
             </div>
         }
@@ -153,7 +165,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                <button type="button" id="reservarNumeros" class="btn btn-primary" onclick="postEstornarNumeros()">Sim</button>
+                <button type="button" id="estornarNumeros" class="btn btn-primary" onclick="postEstornarNumeros()">Sim</button>
             </div>
         </div>
     </div>
@@ -204,6 +216,10 @@
             font-weight: bolder;
             box-shadow: 0px 0px 5px black;
         }
+
+    .estornado {
+        background-color: pink;
+    }
 
     .selecionado {
         font-weight: bolder;
@@ -278,7 +294,7 @@
         exibirValorTotal(qtdItensPagos, "valorTotalEstorno");
     }
 
-    function selecionarNumero(numero, status, nomeCliente) {
+    function selecionarNumero(numero, status, nomeCliente, itemRifaId, clienteId, vendedorId) {
         function adicionarNumero(classesDoNumero, item) {
             numerosEscolhidos.push(item);
             classesDoNumero.add("selecionado");
@@ -320,7 +336,14 @@
             obterInformacoesModalEstorno(qtdItensPagos, itensPagosAgrupados);
         }
 
-        let item = { numero: numero, status: status, nomeCliente: nomeCliente };
+        let item = {
+            numero: numero,
+            status: status,
+            nomeCliente: nomeCliente,
+            itemRifaId: itemRifaId,
+            clienteId: clienteId,
+            vendedorId: vendedorId
+        };
         let classesDoNumero = document.getElementById(numero).classList;
 
         !numerosEscolhidos.find(x => x.numero === numero) ?
@@ -370,6 +393,22 @@
         return itensRifa;
     }
 
+    function preencherItensRifaEstorno() {
+        const itensRifa = numerosEscolhidos.filter(x => x.status === statusPagamento.pagamentoRecebido).map(item => ({
+            RifaId: @Model.Item1.RifaId,
+            itemRifaId: item.itemRifaId,
+            NumeroEscolhido: item.numero,
+            Cliente: {
+                ClienteId: item.clienteId
+            },
+            Vendedor: {
+                ClienteId: item.vendedorId
+            }
+        }));
+
+        return itensRifa;
+    }
+
     function postReservarNumeros() {
         fetch("/ItemRifa/ReservarNumeros", {
             method: "POST",
@@ -377,6 +416,24 @@
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(preencherItensRifa())
+        })
+            .then(response => response.text())
+            .then(() => {
+                alert("Sucesso.");
+                location.reload();
+            })
+            .catch(err => {
+                alert(err);
+            });
+    }
+
+    function postEstornarNumeros() {
+        fetch("/ItemRifa/EstornarNumeros", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItensRifaEstorno())
         })
             .then(response => response.text())
             .then(() => {
