@@ -16,8 +16,7 @@ namespace JPBM.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ReservarNumeros([FromForm] List<ItemRifaViewModel> itensRifaViewModel)
+        public async Task<ActionResult> ReservarNumeros([FromBody] List<ItemRifaViewModel> itensRifaViewModel)
         {
             try
             {

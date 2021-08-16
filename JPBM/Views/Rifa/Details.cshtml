@@ -353,14 +353,12 @@
             return vendedorId;
         }
 
-        const statusPagamento = validarStatusPagamento();
-
         const clienteId = obterCliente();
         const vendedorId = obterVendedor();
-        const itensRifa = numerosEscolhidos.map(numero => ({
+        const itensRifa = numerosEscolhidos.filter(x => x.status === 'disponivel').map(item => ({
             RifaId: @Model.Item1.RifaId,
-            NumeroEscolhido: numero,
-            StatusPagamento: statusPagamento,
+            NumeroEscolhido: item.numero,
+            StatusPagamento: validarStatusPagamento(),
             Cliente: {
                 ClienteId: clienteId
             },
@@ -373,26 +371,20 @@
     }
 
     function postReservarNumeros() {
-        function getToken() {
-            let token = '@Html.AntiForgeryToken()';
-            token = $(token).val();
-            return token;
-        }
-
-        $.ajax({
-            url: '/ItemRifa/ReservarNumeros',
-            type: 'POST',
-            data: {
-                __RequestVerificationToken: getToken(),
-                itensRifaViewModel: preencherItensRifa()
+        fetch("/ItemRifa/ReservarNumeros", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            success: function () {
+            body: JSON.stringify(preencherItensRifa())
+        })
+            .then(response => response.text())
+            .then(() => {
                 alert("Sucesso.");
                 location.reload();
-            },
-            error: function (jqXHR, exception) {
-                alert('Erro.');
-            }
-        });
+            })
+            .catch(err => {
+                alert(err);
+            });
     }
 </script>
