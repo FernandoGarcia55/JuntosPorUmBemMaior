@@ -1,5 +1,4 @@
-﻿using JPBM.Enums;
-using JPBM.Interfaces;
+﻿using JPBM.Interfaces;
 using JPBM.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,6 +12,12 @@ namespace JPBM.Services
         public ClienteService(IClienteRepository clienteRepository)
         {
             _clienteRepository = clienteRepository;
+        }
+
+        public async Task<bool> Criar(ClienteViewModel clienteViewModel)
+        {
+            var cliente = clienteViewModel.MapToEntity();
+            return await _clienteRepository.AddAsync(cliente) > 0;
         }
 
         public async Task<List<ClienteViewModel>> ListarClientesAsync()
@@ -31,7 +36,7 @@ namespace JPBM.Services
             var vendedores = new List<ClienteViewModel>();
             clientes.ForEach(cliente =>
             {
-                if (cliente.Vendedor == StatusAtivo.Sim)
+                if (cliente.Vendedor)
                     vendedores.Add(cliente);
             });
             return vendedores;

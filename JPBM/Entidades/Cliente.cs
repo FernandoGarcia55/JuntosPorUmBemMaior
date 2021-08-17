@@ -9,6 +9,6 @@ namespace JPBM.Entidades
         public string Sobrenome { get; set; }
         public bool Vendedor { get; set; }
         public DateTime DataCadastro { get; set; }
-        public DateTime DataAlteracao { get; set; }
+        public DateTime? DataAlteracao { get; set; }
     }
 }
