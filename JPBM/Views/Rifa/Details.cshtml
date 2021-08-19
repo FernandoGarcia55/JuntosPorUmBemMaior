@@ -95,7 +95,7 @@
 </div>
 
 <div>
-    <button id="reservaBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled>
+    <button id="reservaBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled onclick="obterInformacoesModalReserva()">
         Reservar
     </button>
     <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal('@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()')">
@@ -262,7 +262,7 @@
         valorTotalSpan.appendChild(texto);
     }
 
-    function obterInformacoesModalReserva(qtdNumerosDisponiveis, numerosDisponiveis) {
+    function obterInformacoesModalReserva() {
         function exibirNumerosEscolhidos(numerosDisponiveis) {
             const numerosEscolhidosSpan = document.getElementById("numerosEscolhidos");
             const texto = document.createTextNode(numerosDisponiveis.join(', '));
@@ -271,6 +271,13 @@
                 numerosEscolhidosSpan.removeChild(numerosEscolhidosSpan.firstChild);
             numerosEscolhidosSpan.appendChild(texto);
         }
+
+        const numerosDisponiveis = numerosEscolhidos
+            .filter(x => x.status === 'disponivel')
+            .map(x => x.numero)
+            .sort();
+
+        const qtdNumerosDisponiveis = numerosDisponiveis.length;
 
         exibirNumerosEscolhidos(numerosDisponiveis);
         exibirQtdNumerosSelecionados(qtdNumerosDisponiveis, "qtdNumerosEscolhidosReserva");
@@ -297,16 +304,16 @@
 
             const titulos = {
                 AguardandoPagamento() {
-                    return 'Confirmar o pagamento destes';
+                    return 'Confirmar o pagamento deste(s)';
                 },
                 PagamentoRecebido() {
-                    return 'Estornar estes';
+                    return 'Estornar este(s)';
                 }
             }
 
             const novoTitulo = titulos[status];
             if (novoTitulo)
-                titulo.textContent = `${novoTitulo()} números?`;
+                titulo.textContent = `${novoTitulo()} número(s)?`;
         }
 
         function alterarAcao(status) {
@@ -361,23 +368,12 @@
             botao.disabled = qtdNumeros === 0;
         }
 
-        function prepararNumerosDisponiveis() {
-            const numerosDisponiveis = numerosEscolhidos
-                .filter(x => x.status === 'disponivel')
-                .map(x => x.numero)
-                .sort();
-            const qtdNumerosDisponiveis = numerosDisponiveis.length;
-
-            habilitarBotao(qtdNumerosDisponiveis, 'reservaBtn');
-            obterInformacoesModalReserva(qtdNumerosDisponiveis, numerosDisponiveis);
-        }
-
         function obterQtdItensPorStatus(status) {
             return numerosEscolhidos
                 .filter(x => x.status === status).length;
         }
 
-        let item = {
+        const item = {
             numero: numero,
             status: status,
             nomeCliente: nomeCliente,
@@ -389,21 +385,25 @@
 
         !numerosEscolhidos.find(x => x.numero === numero) ?
             adicionarNumero(classesDoNumero, item) :
-            removerNumero(classesDoNumero, item);
+            removerNumero(classesDoNumero, item);   
 
-        if(status === 'disponivel')
-            return prepararNumerosDisponiveis();
+        const botoes = {
+            disponivel() {
+                return 'reservaBtn'
+            },
+            AguardandoPagamento() {
+                return 'confirmarPagamentoBtn';
+            },
+            PagamentoRecebido() {
+                return 'estornoBtn';
+            }
+        }
 
-
-        let botao;
-        if (status === statusPagamento.pagamentoRecebido)
-            botao = 'estornoBtn';
-
-        if (status === statusPagamento.aguardandoPagamento)
-            botao = 'confirmarPagamentoBtn';
-
-        let qtdItensPorStatus = obterQtdItensPorStatus(status);
-        habilitarBotao(qtdItensPorStatus, botao)
+        const botao = botoes[status];
+        if (botao) {
+            const qtdItensPorStatus = obterQtdItensPorStatus(status);
+            habilitarBotao(qtdItensPorStatus, botao())
+        }
     }
 
     function preencherItensRifa() {
