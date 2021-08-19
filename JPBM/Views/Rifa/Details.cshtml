@@ -98,10 +98,10 @@
     <button id="reservaBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled>
         Reservar
     </button>
-    <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#estornarModal" disabled onclick="obterInformacoesModalEstorno('@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()')">
+    <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal('@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()')">
         Estornar
     </button>
-    <button id="confirmarPagamentoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#estornarModal" disabled onclick="obterInformacoesModalEstorno('@JPBM.Enums.StatusPagamento.AguardandoPagamento.ToString()')">
+    <button id="confirmarPagamentoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal('@JPBM.Enums.StatusPagamento.AguardandoPagamento.ToString()')">
         Confirmar Pagamento
     </button>
 </div>
@@ -139,9 +139,9 @@
                     </select>
                 </div>
                 <div>
-                    <p><span id="qtdNumerosEscolhidos">0</span> número(s) selecionado(s): <span id="numerosEscolhidos">0</span>.</p>
+                    <p><span id="qtdNumerosEscolhidosReserva">0</span> número(s) selecionado(s): <span id="numerosEscolhidos">0</span>.</p>
                     <br />
-                    <p><b>Valor Total: </b><span id="valorTotal">0</span>.</p>
+                    <p><b>Valor Total: </b><span id="valorTotalReserva">0</span>.</p>
                     <input type="checkbox" id="pagamentoEfetuado" name="pagamentoEfetuado" />
                     <label for="pagamentoEfetuado"> Pagamento já realizado.</label>
                 </div>
@@ -155,26 +155,26 @@
     </div>
 </div>
 
-<div class="modal fade" id="estornarModal" tabindex="-1" aria-labelledby="estornarModalLabel" aria-hidden="true">
+<div class="modal fade" id="acoesModal" tabindex="-1" aria-labelledby="acoesModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="estornarModalLabel">Estornar estes números?</h5>
+                <h5 class="modal-title" id="acoesModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div>
-                    <p><span id="qtdNumerosEscolhidosEstorno">0</span> número(s) selecionado(s).</p>
+                    <p><span id="qtdNumerosEscolhidos">0</span> número(s) selecionado(s).</p>
                     <h6>Números por clientes</h6>
                     <ul id="numerosClientes"></ul>
                     <br />
-                    <p><b>Valor Total: </b><span id="valorTotalEstorno">0</span>.</p>
+                    <p><b>Valor Total: </b><span id="valorTotal">0</span>.</p>
                 </div>
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                <button type="button" id="estornarNumeros" class="btn btn-primary" onclick="postEstornarNumeros()">Sim</button>
+                <button type="button" id="acaoBtn" class="btn btn-primary">Sim</button>
             </div>
         </div>
     </div>
@@ -241,13 +241,13 @@
         reservarNumerosBtn.disabled = !(clienteIndex > 0 && vendedorIndex > 0);
     }
 
-    function exibirQuantidadeNumerosEscolhidos(quantidade, elementoQtdId) {
-        const qtdNumerosEscolhidosSpan = document.getElementById(elementoQtdId);
+    function exibirQtdNumerosSelecionados(quantidade, elementoQtdId) {
+        const qtdNumerosSpan = document.getElementById(elementoQtdId);
         const texto = document.createTextNode(quantidade);
 
-        if (qtdNumerosEscolhidosSpan.firstChild)
-            qtdNumerosEscolhidosSpan.removeChild(qtdNumerosEscolhidosSpan.firstChild);
-        qtdNumerosEscolhidosSpan.appendChild(texto);
+        if (qtdNumerosSpan.firstChild)
+            qtdNumerosSpan.removeChild(qtdNumerosSpan.firstChild);
+        qtdNumerosSpan.appendChild(texto);
     }
 
     function exibirValorTotal(quantidade, elementoValorId) {
@@ -262,7 +262,7 @@
         valorTotalSpan.appendChild(texto);
     }
 
-    function obterInformacoesModal(qtdNumerosDisponiveis, numerosDisponiveis) {
+    function obterInformacoesModalReserva(qtdNumerosDisponiveis, numerosDisponiveis) {
         function exibirNumerosEscolhidos(numerosDisponiveis) {
             const numerosEscolhidosSpan = document.getElementById("numerosEscolhidos");
             const texto = document.createTextNode(numerosDisponiveis.join(', '));
@@ -273,11 +273,11 @@
         }
 
         exibirNumerosEscolhidos(numerosDisponiveis);
-        exibirQuantidadeNumerosEscolhidos(qtdNumerosDisponiveis, "qtdNumerosEscolhidos");
-        exibirValorTotal(qtdNumerosDisponiveis, "valorTotal");
+        exibirQtdNumerosSelecionados(qtdNumerosDisponiveis, "qtdNumerosEscolhidosReserva");
+        exibirValorTotal(qtdNumerosDisponiveis, "valorTotalReserva");
     }
 
-    function obterInformacoesModalEstorno(status) {
+    function obterInformacoesModal(status) {
         if (!statusPagamento.aguardandoPagamento.includes(status) && !statusPagamento.pagamentoRecebido.includes(status))
             return;
 
@@ -293,7 +293,7 @@
         }
 
         function alterarTitulo(status) {
-            const titulo = document.getElementById('estornarModalLabel');
+            const titulo = document.getElementById('acoesModalLabel');
 
             const titulos = {
                 AguardandoPagamento() {
@@ -310,7 +310,7 @@
         }
 
         function alterarAcao(status) {
-            const botaoAcao = document.getElementById('estornarNumeros');
+            const botaoAcao = document.getElementById('acaoBtn');
 
             const acoes = {
                 AguardandoPagamento() {
@@ -339,8 +339,8 @@
         const qtdItensPagos = itensPagos.length;
 
         exibirNumerosEscolhidos(itensPagosAgrupados);
-        exibirQuantidadeNumerosEscolhidos(qtdItensPagos, "qtdNumerosEscolhidosEstorno");
-        exibirValorTotal(qtdItensPagos, "valorTotalEstorno");
+        exibirQtdNumerosSelecionados(qtdItensPagos, "qtdNumerosEscolhidos");
+        exibirValorTotal(qtdItensPagos, "valorTotal");
         alterarTitulo(status);
         alterarAcao(status);
     }
@@ -369,7 +369,7 @@
             const qtdNumerosDisponiveis = numerosDisponiveis.length;
 
             habilitarBotao(qtdNumerosDisponiveis, 'reservaBtn');
-            obterInformacoesModal(qtdNumerosDisponiveis, numerosDisponiveis);
+            obterInformacoesModalReserva(qtdNumerosDisponiveis, numerosDisponiveis);
         }
 
         function obterQtdItensPorStatus(status) {
