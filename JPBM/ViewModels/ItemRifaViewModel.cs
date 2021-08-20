@@ -32,7 +32,7 @@ namespace JPBM.ViewModels
                 StatusPagamentoId = (byte)StatusPagamento,
                 Ativo = Convert.ToBoolean((byte)Ativo),
                 DataCadastro = DataCadastro,
-                DataPagamento = StatusPagamento == StatusPagamento.PagamentoRecebido ? DateTime.Now : DataPagamento,
+                DataPagamento = DataPagamento,
                 DataAlteracao = DataAlteracao,
                 DataInativacao = DataInativacao
             };

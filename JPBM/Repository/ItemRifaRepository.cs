@@ -1,10 +1,7 @@
 ﻿using JPBM.Entidades;
-using JPBM.Enums;
 using JPBM.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace JPBM.Repository
@@ -36,9 +33,9 @@ namespace JPBM.Repository
                                         )", entity);
         }
 
-        public async Task<IReadOnlyList<int>> BulkInsert(List<ItemRifa> itensRifa)
+        public async Task<int> BulkInsert(List<ItemRifa> itensRifa)
         {
-            return await BulkAsync(@"INSERT INTO ItemRifa(
+            return await ExecuteAsync(@"INSERT INTO ItemRifa(
                                          RifaId, 
                                          VendedorId, 
                                          ClienteId, 
@@ -62,13 +59,10 @@ namespace JPBM.Repository
             return await ExecuteAsync(@"UPDATE ItemRifa
                                           SET
                                            StatusPagamentoId = @StatusPagamentoId,
+                                           Ativo = @Ativo,
+                                           DataPagamento = ISNULL(DataPagamento,@DataPagamento),
                                            DataAlteracao = @DataAlteracao
-                                        WHERE ItemRifaId IN @ItemRifaIds", new
-            {
-                StatusPagamentoId = (int)StatusPagamento.PagamentoEstornado,
-                DataAlteracao = DateTime.Now,
-                ItemRifaIds = itensRifa.Select(x => x.ItemRifaId),
-            });
+                                        WHERE ItemRifaId = @ItemRifaId", itensRifa);
         }
 
         public async Task<int> DeleteAsync(int id)

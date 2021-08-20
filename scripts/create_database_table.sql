@@ -217,7 +217,7 @@ AS
 						inserted AS I
 						INNER JOIN ItemRifa AS IR ON I.RifaId = IR.RifaId
 													 AND I.NumeroEscolhido = IR.NumeroEscolhido
-					WHERE IR.Ativo = 1
+					WHERE IR.Ativo = 1 AND IR.StatusPagamentoId <> 4
 				  ) 
 		BEGIN
 			RAISERROR('Erro dados duplicados: Número já escolhido e ativo para esta rifa.', 10, 11);
@@ -229,14 +229,18 @@ AS
 				[VendedorId], 
 				[ClienteId], 
 				[NumeroEscolhido], 
-				[StatusPagamentoId]
+				[StatusPagamentoId],
+				[DataCadastro], 
+				[DataPagamento]
 			) 
 			SELECT 
 				[RifaId], 
 				[VendedorId], 
 				[ClienteId], 
 				[NumeroEscolhido], 
-				[StatusPagamentoId]
+				[StatusPagamentoId],
+				[DataCadastro], 
+				[DataPagamento]
 			FROM 
 				 inserted
 		END

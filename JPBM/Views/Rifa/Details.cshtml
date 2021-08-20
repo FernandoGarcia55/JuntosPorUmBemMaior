@@ -53,7 +53,7 @@
 <div class="principal">
     @for (var numero = 1; numero <= Model.Item1.Tamanho; numero++)
     {
-        var itemRifaEscolhido = Model.Item1.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim);
+        var itemRifaEscolhido = Model.Item1.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim && i.StatusPagamento != JPBM.Enums.StatusPagamento.PagamentoEstornado);
         @if (itemRifaEscolhido == null)
         {
             <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero,'disponivel')">
@@ -84,13 +84,6 @@
                 @numero
             </div>
         }
-        else
-        {
-            <div id="@numero" class="item disponivel estornado" onclick="selecionarNumero(@numero,'disponivel')">
-                @numero
-            </div>
-        }
-
     }
 </div>
 
@@ -215,10 +208,6 @@
 
     .pago {
         background-color: lightblue;
-    }
-
-    .estornado {
-        background-color: pink;
     }
 
     .selecionado {
@@ -385,7 +374,7 @@
 
         !numerosEscolhidos.find(x => x.numero === numero) ?
             adicionarNumero(classesDoNumero, item) :
-            removerNumero(classesDoNumero, item);   
+            removerNumero(classesDoNumero, item);
 
         const botoes = {
             disponivel() {
@@ -458,43 +447,82 @@
         return itensRifa;
     }
 
+    function preencherItensConfirmarPagamento() {
+        const itensRifa = numerosEscolhidos.filter(x => x.status === statusPagamento.aguardandoPagamento).map(item => ({
+            RifaId: @Model.Item1.RifaId,
+            itemRifaId: item.itemRifaId,
+            NumeroEscolhido: item.numero,
+            Cliente: {
+                ClienteId: item.clienteId
+            },
+            Vendedor: {
+                ClienteId: item.vendedorId
+            }
+        }));
+
+        return itensRifa;
+    }
+
     function postReservarNumeros() {
-        fetch("/ItemRifa/ReservarNumeros", {
+        fetch("/ItemRifa/Reservar", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(preencherItensRifa())
         })
-            .then(response => response.text())
-            .then(() => {
-                alert("Sucesso.");
-                location.reload();
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Reserva realizada!");
+                } else {
+                    alert("Erro ao realizar a reserva.");
+                }
             })
             .catch(err => {
                 alert(err);
-            });
+            })
+            .finally(() => location.reload());
     }
 
     function postEstornarNumeros() {
-        fetch("/ItemRifa/EstornarNumeros", {
+        fetch("/ItemRifa/Estornar", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(preencherItensRifaEstorno())
         })
-            .then(response => response.text())
-            .then(() => {
-                alert("Sucesso.");
-                location.reload();
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Estorno realizado!");
+                } else {
+                    alert("Erro ao realizar o estorno.");
+                }                
             })
             .catch(err => {
                 alert(err);
-            });
+            })
+            .finally(() => location.reload());
     }
 
     function postConfirmarPagamento() {
-        alert("Pagamento confirmado");
+        fetch("/ItemRifa/ConfirmarPagamento", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItensConfirmarPagamento())
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Pagamento confirmado!");
+                } else {
+                    alert("Erro ao confirmar o pagamento.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            })
+            .finally(() => location.reload());
     }
 </script>
