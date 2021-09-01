@@ -1,5 +1,6 @@
 ﻿using JPBM.Entidades;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -17,6 +18,7 @@ namespace JPBM.ViewModels
         [DisplayName("Alteração")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? DataAlteracao { get; set; }
+        public List<ContatoViewModel> Contatos { get; set; }
 
         public string GetNomeCompleto()
         {

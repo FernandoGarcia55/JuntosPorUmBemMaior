@@ -9,10 +9,12 @@ namespace JPBM.Controllers
     public class ClienteController : Controller
     {
         private readonly IClienteService _clienteService;
+        private readonly ITipoContatoService _tipoContatoService;
 
-        public ClienteController(IClienteService clienteService)
+        public ClienteController(IClienteService clienteService, ITipoContatoService tipoContatoService)
         {
             _clienteService = clienteService;
+            _tipoContatoService = tipoContatoService;
         }
 
         // GET: ClienteController
@@ -29,8 +31,11 @@ namespace JPBM.Controllers
         }
 
         // GET: ClienteController/Create
-        public ActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var tiposContatoViewModel = await _tipoContatoService.Listar();
+            ViewData["TiposContato"] = tiposContatoViewModel;
+
             return View();
         }
 
