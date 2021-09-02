@@ -20,6 +20,7 @@ namespace JPBM.Configuration
             services.AddTransient<IClienteService, ClienteService>();
             services.AddTransient<IItemRifaService, ItemRifaService>();
             services.AddTransient<ITipoContatoService, TipoContatoService>();
+            services.AddTransient<IContatoService, ContatoService>();
         }
     }
 }

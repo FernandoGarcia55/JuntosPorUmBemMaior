@@ -14,17 +14,20 @@ namespace JPBM.Repository
 
         public async Task<int> AddAsync(Cliente entity)
         {
-            return await ExecuteAsync(@"INSERT INTO Cliente(
-                                            Nome, 
-                                            Sobrenome, 
-                                            Vendedor, 
-                                            DataCadastro
-                                        ) VALUES (
-                                            @Nome, 
-                                            @Sobrenome, 
-                                            @Vendedor, 
-                                            @DataCadastro
-                                        )", entity);
+            return await ExecuteScalarAsync<int>(@"INSERT INTO Cliente(
+                                                       Nome, 
+                                                       Sobrenome, 
+                                                       Vendedor, 
+                                                       DataCadastro
+                                                   ) 
+                                                   OUTPUT inserted.ClienteId 
+                                                   VALUES
+                                                   (
+                                                       @Nome, 
+                                                       @Sobrenome, 
+                                                       @Vendedor, 
+                                                       @DataCadastro
+                                                   )", entity);
         }
 
         public async Task<int> DeleteAsync(int id)

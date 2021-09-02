@@ -5,7 +5,7 @@ namespace JPBM.ViewModels
 {
     public class TipoContatoViewModel
     {
-        public int TipoContatoId { get; set; }
+        public byte TipoContatoId { get; set; }
         [DisplayName("Descrição")]
         public string Descricao { get; set; }
 
