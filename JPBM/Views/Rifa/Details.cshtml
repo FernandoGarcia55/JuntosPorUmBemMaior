@@ -62,7 +62,9 @@
         }
         else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
         {
-            <div id="@numero" class="item pago" onclick="selecionarNumero(
+            var numeroSorteado = itemRifaEscolhido.Sorteado == JPBM.Enums.StatusAtivo.Sim;
+            var classeNumeroSorteado = numeroSorteado ? "sorteado" : "";
+            <div id="@numero" class="item pago @classeNumeroSorteado" onclick="selecionarNumero(
                                                                 @itemRifaEscolhido.NumeroEscolhido,
                                                                 '@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()',
                                                                 '@itemRifaEscolhido.Cliente.GetNomeCompleto()',
@@ -91,11 +93,17 @@
     <button id="reservaBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled onclick="obterInformacoesModalReserva()">
         Reservar
     </button>
-    <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal('@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()')">
+    <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal(
+        '@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()')">
         Estornar
     </button>
-    <button id="confirmarPagamentoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal('@JPBM.Enums.StatusPagamento.AguardandoPagamento.ToString()')">
+    <button id="confirmarPagamentoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal(
+        '@JPBM.Enums.StatusPagamento.AguardandoPagamento.ToString()')">
         Confirmar Pagamento
+    </button>
+    <button id="numeroSorteadoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal(
+        '@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()',true)">
+        Número Sorteado
     </button>
 </div>
 
@@ -209,6 +217,10 @@
     .pago {
         background-color: lightblue;
     }
+    
+    .sorteado {
+        background-color: blue;
+    }
 
     .selecionado {
         font-weight: bolder;
@@ -273,7 +285,7 @@
         exibirValorTotal(qtdNumerosDisponiveis, "valorTotalReserva");
     }
 
-    function obterInformacoesModal(status) {
+    function obterInformacoesModal(status, numeroSorteado = false) {
         if (!statusPagamento.aguardandoPagamento.includes(status) && !statusPagamento.pagamentoRecebido.includes(status))
             return;
 
@@ -288,38 +300,38 @@
             }
         }
 
-        function alterarTitulo(status) {
+        function alterarTitulo(status, numeroSorteado) {
             const titulo = document.getElementById('acoesModalLabel');
 
             const titulos = {
                 AguardandoPagamento() {
-                    return 'Confirmar o pagamento deste(s)';
+                    return 'Confirmar o pagamento deste(s) número(s)?';
                 },
-                PagamentoRecebido() {
-                    return 'Estornar este(s)';
+                PagamentoRecebido(numeroSorteado) {
+                    return numeroSorteado ? 'Confirmar número sorteado?' : 'Estornar este(s) número(s)?';
                 }
             }
 
             const novoTitulo = titulos[status];
             if (novoTitulo)
-                titulo.textContent = `${novoTitulo()} número(s)?`;
+                titulo.textContent = novoTitulo(numeroSorteado);
         }
 
-        function alterarAcao(status) {
+        function alterarAcao(status, numeroSorteado) {
             const botaoAcao = document.getElementById('acaoBtn');
 
             const acoes = {
                 AguardandoPagamento() {
                     return postConfirmarPagamento;
                 },
-                PagamentoRecebido() {
-                    return postEstornarNumeros;
+                PagamentoRecebido(numeroSorteado) {
+                    return numeroSorteado ? postMarcarNumeroSorteado : postEstornarNumeros;
                 }
             }
 
             const novaAcao = acoes[status];
             if (novaAcao)
-                botaoAcao.onclick = novaAcao();
+                botaoAcao.onclick = novaAcao(numeroSorteado);
         }
 
         const itensPagos = numerosEscolhidos
@@ -337,8 +349,8 @@
         exibirNumerosEscolhidos(itensPagosAgrupados);
         exibirQtdNumerosSelecionados(qtdItensPagos, "qtdNumerosEscolhidos");
         exibirValorTotal(qtdItensPagos, "valorTotal");
-        alterarTitulo(status);
-        alterarAcao(status);
+        alterarTitulo(status, numeroSorteado);
+        alterarAcao(status, numeroSorteado);
     }
 
     function selecionarNumero(numero, status, nomeCliente, itemRifaId, clienteId, vendedorId) {
@@ -378,20 +390,31 @@
 
         const botoes = {
             disponivel() {
-                return 'reservaBtn'
+                return {
+                    botaoId: 'reservaBtn'
+                };
             },
             AguardandoPagamento() {
-                return 'confirmarPagamentoBtn';
+                return {
+                    botaoId: 'confirmarPagamentoBtn'
+                };
             },
             PagamentoRecebido() {
-                return 'estornoBtn';
+                return {
+                    botaoId: 'estornoBtn',
+                    subBotaoId: 'numeroSorteadoBtn'
+                };
             }
         }
 
-        const botao = botoes[status];
-        if (botao) {
+        const funcaoBotao = botoes[status];
+        if (funcaoBotao) {
+            const botao = funcaoBotao();
             const qtdItensPorStatus = obterQtdItensPorStatus(status);
-            habilitarBotao(qtdItensPorStatus, botao())
+            habilitarBotao(qtdItensPorStatus, botao.botaoId);
+            if (botao.subBotaoId) {
+                habilitarBotao(qtdItensPorStatus === 1 ? 1 : 0, botao.subBotaoId);
+            }
         }
     }
 
@@ -447,6 +470,15 @@
         return itensRifa;
     }
 
+    function preencherItemNumeroSorteado() {
+        const itemRifa = numerosEscolhidos.find(x => x.status === statusPagamento.pagamentoRecebido);
+        return {
+            RifaId: @Model.Item1.RifaId,
+            itemRifaId: itemRifa.itemRifaId,
+            Sorteado: 'Sim'
+        };
+    }
+
     function preencherItensConfirmarPagamento() {
         const itensRifa = numerosEscolhidos.filter(x => x.status === statusPagamento.aguardandoPagamento).map(item => ({
             RifaId: @Model.Item1.RifaId,
@@ -497,7 +529,7 @@
                     alert("Estorno realizado!");
                 } else {
                     alert("Erro ao realizar o estorno.");
-                }                
+                }
             })
             .catch(err => {
                 alert(err);
@@ -518,6 +550,27 @@
                     alert("Pagamento confirmado!");
                 } else {
                     alert("Erro ao confirmar o pagamento.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            })
+            .finally(() => location.reload());
+    }
+
+    function postMarcarNumeroSorteado() {
+        fetch("/ItemRifa/MarcarNumeroSorteado", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItemNumeroSorteado())
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Número sorteado definido!");
+                } else {
+                    alert("Erro ao definir o número sorteado.");
                 }
             })
             .catch(err => {

@@ -38,6 +38,35 @@ namespace JPBM.Services
             return await AtualizarNoBanco(itensRifa);
         }
 
+        public async Task<bool> ConfirmarNumeroSorteadoAsync(ItemRifaViewModel itemRifaViewModel)
+        {
+            var itensRifa = await _itemRifaRepository.ListarPorRifaId(itemRifaViewModel.RifaId);
+            var itensRifaSorteados = itensRifa.Where(item => item.Ativo && item.Sorteado).ToList();
+            if (itensRifaSorteados.Any())
+            {
+                foreach (var item in itensRifaSorteados)
+                {
+                    if (item.ItemRifaId == itemRifaViewModel.ItemRifaId)
+                        return true;
+
+                    MarcarSorteado(item, false);
+                }
+
+                await _itemRifaRepository.BulkUpdate(itensRifaSorteados);
+            }
+
+            var itemRifa = itensRifa.First(item => item.ItemRifaId == itemRifaViewModel.ItemRifaId);
+            MarcarSorteado(itemRifa, true);
+
+            return await _itemRifaRepository.UpdateAsync(itemRifa) > 0;
+        }
+
+        private static void MarcarSorteado(ItemRifa itemRifa, bool sorteado)
+        {
+            itemRifa.DataAlteracao = DateTime.Now;
+            itemRifa.Sorteado = sorteado;
+        }
+
         private static List<ItemRifa> ObterEntidade(List<ItemRifaViewModel> itensRifaViewModel, StatusPagamento statusPagamento, DateTime? dataAlteracao = null)
         {
             var itensRifa = new List<ItemRifa>(itensRifaViewModel.Count);

@@ -43,6 +43,15 @@ namespace JPBM.Controllers
                 return Ok();
             });
 
+        [HttpPost]
+        public async Task<IActionResult> MarcarNumeroSorteado([FromBody] ItemRifaViewModel itemRifaViewModel) =>
+            await TratarResultadoAsync(async () =>
+            {
+                await _itemRifaService.ConfirmarNumeroSorteadoAsync(itemRifaViewModel);
+                
+                return Ok();
+            });
+
         private async Task<IActionResult> TratarResultadoAsync(Func<Task<IActionResult>> servico)
         {
             try

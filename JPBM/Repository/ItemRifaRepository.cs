@@ -61,7 +61,8 @@ namespace JPBM.Repository
                                            StatusPagamentoId = @StatusPagamentoId,
                                            Ativo = @Ativo,
                                            DataPagamento = ISNULL(DataPagamento,@DataPagamento),
-                                           DataAlteracao = @DataAlteracao
+                                           DataAlteracao = @DataAlteracao,
+                                           Sorteado = @Sorteado
                                         WHERE ItemRifaId = @ItemRifaId", itensRifa);
         }
 
