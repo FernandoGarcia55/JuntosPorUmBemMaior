@@ -42,11 +42,12 @@ namespace JPBM.Services
             var rifaViewModel = RifaViewModel.MapFromEntity(rifa);
             rifaViewModel.ItensRifa = new List<ItemRifaViewModel>(itensRifa.Count);
 
-            foreach(var item in itensRifa)
+            foreach (var item in itensRifa)
             {
                 var itemRifa = ItemRifaViewModel.MapFromEntity(item);
-                itemRifa.Cliente = clientes.FirstOrDefault(c=> c.ClienteId == item.ClienteId);
-                itemRifa.Vendedor = vendedores.FirstOrDefault(v => v.ClienteId == item.ClienteId);
+
+                itemRifa.Cliente = clientes.FirstOrDefault(c => c.ClienteId == item.ClienteId);
+                itemRifa.Vendedor = vendedores.FirstOrDefault(v => v.ClienteId == item.VendedorId);
                 rifaViewModel.ItensRifa.Add(itemRifa);
             }
             return rifaViewModel;

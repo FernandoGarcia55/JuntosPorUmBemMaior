@@ -33,25 +33,37 @@ namespace JPBM.Repository
                                         )", entity);
         }
 
-        public async Task<IReadOnlyList<int>> BulkInsert(List<ItemRifa> itensRifa)
+        public async Task<int> BulkInsert(List<ItemRifa> itensRifa)
         {
-            return await BulkInsertAsync(@"INSERT INTO ItemRifa(
-                                            RifaId, 
-                                            VendedorId, 
-                                            ClienteId, 
-                                            NumeroEscolhido, 
-                                            StatusPagamentoId, 
-                                            DataCadastro, 
-                                            DataPagamento
-                                        ) VALUES (
-                                            @RifaId, 
-                                            @VendedorId, 
-                                            @ClienteId, 
-                                            @NumeroEscolhido, 
-                                            @StatusPagamentoId, 
-                                            @DataCadastro, 
-                                            @DataPagamento
-                                        )", itensRifa);
+            return await ExecuteAsync(@"INSERT INTO ItemRifa(
+                                         RifaId, 
+                                         VendedorId, 
+                                         ClienteId, 
+                                         NumeroEscolhido, 
+                                         StatusPagamentoId, 
+                                         DataCadastro, 
+                                         DataPagamento
+                                     ) VALUES (
+                                         @RifaId, 
+                                         @VendedorId, 
+                                         @ClienteId, 
+                                         @NumeroEscolhido, 
+                                         @StatusPagamentoId, 
+                                         @DataCadastro, 
+                                         @DataPagamento
+                                     )", itensRifa);
+        }
+
+        public async Task<int> BulkUpdate(List<ItemRifa> itensRifa)
+        {
+            return await ExecuteAsync(@"UPDATE ItemRifa
+                                          SET
+                                           StatusPagamentoId = @StatusPagamentoId,
+                                           Ativo = @Ativo,
+                                           DataPagamento = ISNULL(DataPagamento,@DataPagamento),
+                                           DataAlteracao = @DataAlteracao,
+                                           Sorteado = @Sorteado
+                                        WHERE ItemRifaId = @ItemRifaId", itensRifa);
         }
 
         public async Task<int> DeleteAsync(int id)

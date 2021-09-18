@@ -1,0 +1,198 @@
+﻿@using vm = JPBM.ViewModels;
+@model vm.ClienteViewModel
+
+@{
+    ViewData["Title"] = "Novo Cliente";
+}
+
+<h2>Novo Cliente</h2>
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sobrenome" class="control-label"></label>
+                <input asp-for="Sobrenome" class="form-control" />
+                <span asp-validation-for="Sobrenome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <h4>Contatos</h4>
+                <div id="contatos">
+                    <div id="contato1">
+                        <label for="tipoContato1">Tipo:</label>
+                        <select id="tipoContato1" class="selectpicker" onchange="incluirMascara('tipoContato1','textoContato1')">
+                            <option value="" selected disabled hidden>Selecione</option>
+                            @foreach (var tipoContato in ViewData["TiposContato"] as List<vm.TipoContatoViewModel>)
+                            {
+                                <option value="@tipoContato.TipoContatoId">@tipoContato.Descricao</option>
+                            }
+                        </select>
+                        <input type="text" id="textoContato1" onchange="incluirContatoHidden('tipoContato1', this.value, 'contato1')"/>
+                        <input type="button" value="-" class="btn btn-secondary" onclick="removerContato('contato1')" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="button" value="+" class="btn btn-primary" onclick="adicionarContato()" />
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" asp-for="Vendedor" />
+                <label asp-for="Vendedor" class="control-label"></label>
+                <span asp-validation-for="Vendedor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enviar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar</a>
+</div>
+
+<script>
+
+    let listaContatos = [];
+    let qtdContatos = 1;
+    let maxContatoId = qtdContatos;
+
+    function criarHiddens() {
+        function obterHidden(name, value, data) {
+            let hidden = document.createElement('input');
+            hidden.setAttribute('type', 'hidden');
+            hidden.setAttribute('class', 'hiddenContato');
+            hidden.setAttribute('name', name)
+            hidden.setAttribute('value', value)
+            hidden.setAttribute('data-divContatoId', data)
+            return hidden
+        }
+
+        const contatos = document.getElementById('contatos');
+        for (let qtd = 0; qtd < listaContatos.length; qtd++) {
+            let novoTipoContato = obterHidden(`Contatos[${qtd}].TipoContato.TipoContatoId`, listaContatos[qtd].tipoContatoId, listaContatos[qtd].divContatoId);
+            contatos.appendChild(novoTipoContato);
+
+            let novoValorContato = obterHidden(`Contatos[${qtd}].Valor`, listaContatos[qtd].valor, listaContatos[qtd].divContatoId);
+            contatos.appendChild(novoValorContato);
+        }
+    }
+
+    function resetarHiddens() {
+        let hiddens = document.getElementsByClassName('hiddenContato');
+        if (!hiddens || hiddens.length === 0)
+            return;
+
+        while (hiddens.length > 0) {
+            hiddens[0].remove();
+        }
+    }
+
+    function incluirContatoHidden(tipoContatoId, valor, divContatoId) {
+        function obterIndexTipoContato(tipoContatoId) {
+            return document.getElementById(tipoContatoId).selectedIndex
+        }
+
+        let indexTipoContato = obterIndexTipoContato(tipoContatoId);
+        let contato = {
+            tipoContatoId: indexTipoContato,
+            valor: valor,
+            divContatoId: divContatoId
+        };
+        listaContatos.push(contato);
+        resetarHiddens();
+        criarHiddens();
+    }
+
+    function adicionarContato() {
+        maxContatoId++;
+        qtdContatos++;
+        const divContatoId = `contato${maxContatoId}`;
+        const contatos = document.getElementById('contatos');
+        let novoContato = document.createElement('div');
+        novoContato.setAttribute('id', divContatoId);
+
+        novoContato.innerHTML =
+            `<label for="tipoContato${maxContatoId}">Tipo:</label>
+             <select id="tipoContato${maxContatoId}" class="selectpicker" onchange="incluirMascara('tipoContato${maxContatoId}','textoContato${maxContatoId}')">
+                 <option value="" selected disabled hidden>Selecione</option>
+                 @foreach (var tipoContato in ViewData["TiposContato"] as List<vm.TipoContatoViewModel>)
+                 {
+                     <option value="@tipoContato.TipoContatoId">@tipoContato.Descricao</option>
+                 }
+             </select>
+             <input type="text" id="textoContato${maxContatoId}" onchange="incluirContatoHidden('tipoContato${maxContatoId}', this.value, '${divContatoId}')"/>
+             <input type="button" value="-" class="btn btn-secondary" onclick="removerContato('${divContatoId}')" />`
+
+        contatos.appendChild(novoContato);
+    }
+
+    function removerContato(id) {
+        if (qtdContatos == 1)
+            return;
+
+        const element = document.getElementById(id);
+        element.remove();
+
+        listaContatos = listaContatos.filter(contato => contato.divContatoId !== id);
+
+        qtdContatos--;
+        resetarHiddens();
+        criarHiddens();
+    }
+
+    function inputTelefoneListener(event) {
+        var valor = event.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        event.target.value = '(' + valor[1] + ') ' + valor[2] + '-' + valor[3];
+    }
+
+    function backSpaceTelefoneListener(event) {
+        if (event.key === "Backspace") {
+            resetarInput(event.target.removeEventListener('input', inputTelefoneListener));
+        }
+    }
+
+    function validarTelefone(id) {
+        let input = document.getElementById(id);
+        input.addEventListener('input', inputTelefoneListener);
+        input.addEventListener('keydown', backSpaceTelefoneListener);
+    }
+
+    function resetarInput(id) {
+        let input = document.getElementById(id);
+        input.removeEventListener('input', inputTelefoneListener);
+        input.value = '';
+    }
+
+    function incluirMascara(tipoContatoId, textoContatoId) {
+        resetarInput(textoContatoId)
+        let tipoContato = document.getElementById(tipoContatoId);
+        let textoSelecionado = tipoContato.options[tipoContato.selectedIndex].text.toUpperCase();
+        let placeholder = '';
+        let oninput = '';
+        let inputType = 'text';
+
+        if (textoSelecionado.includes('CELULAR') || textoSelecionado.includes('TELEFONE')) {
+            if (textoSelecionado.includes('DDD')) {
+                placeholder = '(99) 99999-9999'
+                oninput = `validarTelefone('${textoContatoId}')`;
+            }
+        } else if (textoSelecionado.includes('E-MAIL') || textoSelecionado.includes('EMAIL')) {
+            placeholder = 'Digite o e-mail'
+            inputType = 'email'
+        }
+
+
+        let textoContato = document.getElementById(textoContatoId);
+        textoContato.setAttribute('placeholder', placeholder);
+        textoContato.setAttribute('oninput', oninput);
+        textoContato.setAttribute('type', inputType);
+        textoContato.setAttribute('required', true);
+    }
+</script>

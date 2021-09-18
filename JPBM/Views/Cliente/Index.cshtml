@@ -1,0 +1,54 @@
+﻿@model IEnumerable<JPBM.ViewModels.ClienteViewModel>
+
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<h2>Clientes</h2>
+
+<p>
+    <a asp-action="Create">Novo Cliente</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sobrenome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vendedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataCadastro)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sobrenome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vendedor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataCadastro)
+                </td>
+                <td>
+                    @Html.ActionLink("", "Details", new { id = item.ClienteId }, new { @class = "bi bi-list", title = "Detalhes", style = "margin-right: 5px; color: black" })
+                    @Html.ActionLink("", "Edit", new { id = item.ClienteId }, new { @class = "bi bi-pencil", title = "Editar", style = "margin-right: 5px; color: black" })
+                    @Html.ActionLink("", "Delete", new { id = item.ClienteId }, new { @class = "bi bi-trash", title = "Excluir", style = "color: black" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

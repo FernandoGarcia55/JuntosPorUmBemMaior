@@ -1,0 +1,42 @@
+﻿@model IEnumerable<JPBM.ViewModels.TipoContatoViewModel>
+
+@{
+    ViewData["Title"] = "Tipos de Contato";
+}
+
+<h2>Tipos de Contato</h2>
+
+<p>
+    <a asp-action="Create">Novo Tipo de Contato</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoContatoId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoContatoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descricao)
+                </td>
+                <td>
+                    @Html.ActionLink("", "Details", new { id = item.TipoContatoId }, new { @class = "bi bi-list", title = "Detalhes", style = "margin-right: 5px; color: black" })
+                    @Html.ActionLink("", "Edit", new { id = item.TipoContatoId }, new { @class = "bi bi-pencil", title = "Editar", style = "margin-right: 5px; color: black" })
+                    @Html.ActionLink("", "Delete", new { id = item.TipoContatoId }, new { @class = "bi bi-trash", title = "Excluir", style = "color: black" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

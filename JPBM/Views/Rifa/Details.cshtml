@@ -28,7 +28,7 @@
             @Html.DisplayNameFor(model => model.Item1.Tamanho)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Item1.Tamanho)/@Model.Item1.GetNumerosRestantes()
+            @Model.Item1.GetNumerosRestantes() / @Html.DisplayFor(model => model.Item1.Tamanho)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Item1.Valor)
@@ -50,62 +50,138 @@
         </dd>
     </dl>
 </div>
-<div class="row justify-content-md-center">
-    <div class="col-md-3 col-sm-12">
-        <label for="cliente">Cliente:</label>
-        <select id="cliente" class="selectpicker" data-live-search="true">
-            <option value="" selected disabled hidden>Selecione</option>
-            @foreach (var cliente in @Model.Item2)
-            {
-                <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
-            }
-        </select>
-    </div>
-    <div class="col-md-3 col-sm-12">
-        <label for="vendedor">Vendedor:</label>
-        <select id="vendedor" class="selectpicker" data-live-search="true">
-            <option value="" selected disabled hidden>Selecione</option>
-            @foreach (var cliente in @Model.Item3)
-            {
-                <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
-            }
-        </select>
-    </div>
-</div>
 <div class="principal">
     @for (var numero = 1; numero <= Model.Item1.Tamanho; numero++)
     {
-        var itemRifaEscolhido = Model.Item1.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim);
+        var itemRifaEscolhido = Model.Item1.ItensRifa.FirstOrDefault(i => i.NumeroEscolhido == numero && i.Ativo == JPBM.Enums.StatusAtivo.Sim && i.StatusPagamento != JPBM.Enums.StatusPagamento.PagamentoEstornado);
         @if (itemRifaEscolhido == null)
         {
-            <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero)">
+            <div id="@numero" class="item disponivel" onclick="selecionarNumero(@numero,'disponivel')">
                 @numero
             </div>
         }
-        else
+        else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
         {
-            if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.PagamentoRecebido)
-            {
-                <div id="@numero" class="item pago">
-                    @numero
-                </div>
-            }
-            else
-            {
-                <div id="@numero" class="item aguardandoPagamento">
-                    @numero
-                </div>
-            }
+            var numeroSorteado = itemRifaEscolhido.Sorteado == JPBM.Enums.StatusAtivo.Sim;
+            var classeNumeroSorteado = numeroSorteado ? "sorteado" : "";
+            <div id="@numero" class="item pago @classeNumeroSorteado" onclick="selecionarNumero(
+                                                                @itemRifaEscolhido.NumeroEscolhido,
+                                                                '@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()',
+                                                                '@itemRifaEscolhido.Cliente.GetNomeCompleto()',
+                                                                @itemRifaEscolhido.ItemRifaId,
+                                                                @itemRifaEscolhido.Cliente.ClienteId,
+                                                                @itemRifaEscolhido.Vendedor.ClienteId)">
+                @numero
+            </div>
+        }
+        else if (itemRifaEscolhido.StatusPagamento == JPBM.Enums.StatusPagamento.AguardandoPagamento)
+        {
+            <div id="@numero" class="item aguardandoPagamento" onclick="selecionarNumero(
+                                                                @itemRifaEscolhido.NumeroEscolhido,
+                                                                '@JPBM.Enums.StatusPagamento.AguardandoPagamento.ToString()',
+                                                                '@itemRifaEscolhido.Cliente.GetNomeCompleto()',
+                                                                @itemRifaEscolhido.ItemRifaId,
+                                                                @itemRifaEscolhido.Cliente.ClienteId,
+                                                                @itemRifaEscolhido.Vendedor.ClienteId)">
+                @numero
+            </div>
         }
     }
 </div>
+
 <div>
-    <input type="button" class="button btn-primary" value="Reservar Números" onclick="postReservarNumeros()" />
+    <button id="reservaBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservarModal" disabled onclick="obterInformacoesModalReserva()">
+        Reservar
+    </button>
+    <button id="estornoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal(
+        '@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()')">
+        Estornar
+    </button>
+    <button id="confirmarPagamentoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal(
+        '@JPBM.Enums.StatusPagamento.AguardandoPagamento.ToString()')">
+        Confirmar Pagamento
+    </button>
+    <button id="numeroSorteadoBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#acoesModal" disabled onclick="obterInformacoesModal(
+        '@JPBM.Enums.StatusPagamento.PagamentoRecebido.ToString()',true)">
+        Número Sorteado
+    </button>
 </div>
+
 <div>
     @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
     <a asp-action="Index">Back to List</a>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="reservarModal" tabindex="-1" aria-labelledby="reservarModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservarModalLabel">Reservar estes números?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-md-center">
+                    <label for="cliente">Cliente:</label>
+                    <select id="cliente" class="selectpicker" data-live-search="true" onchange="habilitarReserva()">
+                        <option value="" selected disabled hidden>Selecione</option>
+                        @foreach (var cliente in @Model.Item2)
+                        {
+                            <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+                        }
+                    </select>
+                    <label for="vendedor">Vendedor:</label>
+                    <select id="vendedor" class="selectpicker" data-live-search="true" onchange="habilitarReserva()">
+                        <option value="" selected disabled hidden>Selecione</option>
+                        @foreach (var cliente in @Model.Item3)
+                        {
+                            <option value="@cliente.ClienteId">@cliente.GetNomeCompleto()</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <p><span id="qtdNumerosEscolhidosReserva">0</span> número(s) selecionado(s): <span id="numerosEscolhidos">0</span>.</p>
+                    <br />
+                    <p><b>Valor Total: </b><span id="valorTotalReserva">0</span>.</p>
+                    <input type="checkbox" id="pagamentoEfetuado" name="pagamentoEfetuado" />
+                    <label for="pagamentoEfetuado"> Pagamento já realizado.</label>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button type="button" id="reservarNumeros" class="btn btn-primary" onclick="postReservarNumeros()" disabled>Sim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="acoesModal" tabindex="-1" aria-labelledby="acoesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="acoesModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p><span id="qtdNumerosEscolhidos">0</span> número(s) selecionado(s).</p>
+                    <h6>Números por clientes</h6>
+                    <ul id="numerosClientes"></ul>
+                    <br />
+                    <p><b>Valor Total: </b><span id="valorTotal">0</span>.</p>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button type="button" id="acaoBtn" class="btn btn-primary">Sim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <style>
     dd {
         margin-left: 5px;
@@ -120,79 +196,253 @@
     }
 
     .item {
+        cursor: pointer;
         margin: 5px;
-        background: lightgreen;
+        background-color: lightgreen;
         text-align: center;
         font-size: 1.5em;
         width: 50px;
+        box-shadow: 0px 0px 5px gray;
     }
 
-    .disponivel:hover {
-        cursor: pointer;
-        background-color: green;
-        font-weight: bolder;
-    }
-
-    .selecionado {
-        background-color: green;
-        font-weight: bolder;
-    }
+        .item:hover {
+            font-weight: bolder;
+            box-shadow: 0px 0px 5px black;
+        }
 
     .aguardandoPagamento {
-        font-weight: bolder;
         background: lightgray;
     }
 
-        .aguardandoPagamento:hover {
-            cursor: not-allowed;
-        }
-
     .pago {
-        font-weight: bolder;
-        background: gray;
+        background-color: lightblue;
+    }
+    
+    .sorteado {
+        background-color: blue;
     }
 
-        .pago:hover {
-            cursor: not-allowed;
-        }
+    .selecionado {
+        font-weight: bolder;
+        box-shadow: 0px 0px 5px black;
+    }
 </style>
 <script type="text/javascript">
     let numerosEscolhidos = new Array();
+    const statusPagamento = {
+        aguardandoPagamento: "AguardandoPagamento",
+        pagamentoRecebido: "PagamentoRecebido"
+    }
 
-    function getToken() {
-        let token = '@Html.AntiForgeryToken()';
-        token = $(token).val();
-        return token;
-   }
+    function habilitarReserva() {
+        const clienteIndex = document.getElementById("cliente").selectedIndex;
+        const vendedorIndex = document.getElementById("vendedor").selectedIndex;
 
-    function selecionarNumero(id) {
-        let divClassList = document.getElementById(id).classList;
+        let reservarNumerosBtn = document.getElementById("reservarNumeros");
+        reservarNumerosBtn.disabled = !(clienteIndex > 0 && vendedorIndex > 0);
+    }
 
-        if (!numerosEscolhidos.find(x => x === id)) {
-            numerosEscolhidos.push(id);
-            divClassList.add("selecionado");
-        } else {
-            numerosEscolhidos = numerosEscolhidos.filter(x => x !== id);
-            divClassList.remove("selecionado");
+    function exibirQtdNumerosSelecionados(quantidade, elementoQtdId) {
+        const qtdNumerosSpan = document.getElementById(elementoQtdId);
+        const texto = document.createTextNode(quantidade);
+
+        if (qtdNumerosSpan.firstChild)
+            qtdNumerosSpan.removeChild(qtdNumerosSpan.firstChild);
+        qtdNumerosSpan.appendChild(texto);
+    }
+
+    function exibirValorTotal(quantidade, elementoValorId) {
+        let valorMVC = @Model.Item1.Valor.ToString().Replace(",", ".");
+        const valorMultiplicado = quantidade * valorMVC;
+        const valorFormatado = valorMultiplicado.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+        const texto = document.createTextNode(valorFormatado);
+
+        const valorTotalSpan = document.getElementById(elementoValorId);
+        if (valorTotalSpan.firstChild)
+            valorTotalSpan.removeChild(valorTotalSpan.firstChild);
+        valorTotalSpan.appendChild(texto);
+    }
+
+    function obterInformacoesModalReserva() {
+        function exibirNumerosEscolhidos(numerosDisponiveis) {
+            const numerosEscolhidosSpan = document.getElementById("numerosEscolhidos");
+            const texto = document.createTextNode(numerosDisponiveis.join(', '));
+
+            if (numerosEscolhidosSpan.firstChild)
+                numerosEscolhidosSpan.removeChild(numerosEscolhidosSpan.firstChild);
+            numerosEscolhidosSpan.appendChild(texto);
+        }
+
+        const numerosDisponiveis = numerosEscolhidos
+            .filter(x => x.status === 'disponivel')
+            .map(x => x.numero)
+            .sort();
+
+        const qtdNumerosDisponiveis = numerosDisponiveis.length;
+
+        exibirNumerosEscolhidos(numerosDisponiveis);
+        exibirQtdNumerosSelecionados(qtdNumerosDisponiveis, "qtdNumerosEscolhidosReserva");
+        exibirValorTotal(qtdNumerosDisponiveis, "valorTotalReserva");
+    }
+
+    function obterInformacoesModal(status, numeroSorteado = false) {
+        if (!statusPagamento.aguardandoPagamento.includes(status) && !statusPagamento.pagamentoRecebido.includes(status))
+            return;
+
+        function exibirNumerosEscolhidos(itensPagosAgrupados) {
+            const numerosClientesUl = document.getElementById("numerosClientes");
+            numerosClientesUl.innerHTML = "";
+
+            for (const property in itensPagosAgrupados) {
+                const li = document.createElement("li");
+                li.innerHTML = `${property}: ${itensPagosAgrupados[property].join(", ")}.`;
+                numerosClientesUl.appendChild(li);
+            }
+        }
+
+        function alterarTitulo(status, numeroSorteado) {
+            const titulo = document.getElementById('acoesModalLabel');
+
+            const titulos = {
+                AguardandoPagamento() {
+                    return 'Confirmar o pagamento deste(s) número(s)?';
+                },
+                PagamentoRecebido(numeroSorteado) {
+                    return numeroSorteado ? 'Confirmar número sorteado?' : 'Estornar este(s) número(s)?';
+                }
+            }
+
+            const novoTitulo = titulos[status];
+            if (novoTitulo)
+                titulo.textContent = novoTitulo(numeroSorteado);
+        }
+
+        function alterarAcao(status, numeroSorteado) {
+            const botaoAcao = document.getElementById('acaoBtn');
+
+            const acoes = {
+                AguardandoPagamento() {
+                    return postConfirmarPagamento;
+                },
+                PagamentoRecebido(numeroSorteado) {
+                    return numeroSorteado ? postMarcarNumeroSorteado : postEstornarNumeros;
+                }
+            }
+
+            const novaAcao = acoes[status];
+            if (novaAcao)
+                botaoAcao.onclick = novaAcao(numeroSorteado);
+        }
+
+        const itensPagos = numerosEscolhidos
+            .filter(x => x.status === status)
+            .sort((primeiro, segundo) => primeiro.nomeCliente.localeCompare(segundo.nomeCliente) || primeiro.numero - segundo.numero);
+
+        const itensPagosAgrupados = itensPagos.reduce(function (acc, obj) {
+            acc[obj.nomeCliente] = acc[obj.nomeCliente] || [];
+            acc[obj.nomeCliente].push(obj.numero);
+            return acc;
+        }, Object.create(null));
+
+        const qtdItensPagos = itensPagos.length;
+
+        exibirNumerosEscolhidos(itensPagosAgrupados);
+        exibirQtdNumerosSelecionados(qtdItensPagos, "qtdNumerosEscolhidos");
+        exibirValorTotal(qtdItensPagos, "valorTotal");
+        alterarTitulo(status, numeroSorteado);
+        alterarAcao(status, numeroSorteado);
+    }
+
+    function selecionarNumero(numero, status, nomeCliente, itemRifaId, clienteId, vendedorId) {
+        function adicionarNumero(classesDoNumero, item) {
+            numerosEscolhidos.push(item);
+            classesDoNumero.add("selecionado");
+        }
+
+        function removerNumero(classesDoNumero, item) {
+            numerosEscolhidos = numerosEscolhidos.filter(x => x.numero !== item.numero);
+            classesDoNumero.remove("selecionado");
+        }
+
+        function habilitarBotao(qtdNumeros, botaoId) {
+            let botao = document.getElementById(botaoId);
+            botao.disabled = qtdNumeros === 0;
+        }
+
+        function obterQtdItensPorStatus(status) {
+            return numerosEscolhidos
+                .filter(x => x.status === status).length;
+        }
+
+        const item = {
+            numero: numero,
+            status: status,
+            nomeCliente: nomeCliente,
+            itemRifaId: itemRifaId,
+            clienteId: clienteId,
+            vendedorId: vendedorId
+        };
+        let classesDoNumero = document.getElementById(numero).classList;
+
+        !numerosEscolhidos.find(x => x.numero === numero) ?
+            adicionarNumero(classesDoNumero, item) :
+            removerNumero(classesDoNumero, item);
+
+        const botoes = {
+            disponivel() {
+                return {
+                    botaoId: 'reservaBtn'
+                };
+            },
+            AguardandoPagamento() {
+                return {
+                    botaoId: 'confirmarPagamentoBtn'
+                };
+            },
+            PagamentoRecebido() {
+                return {
+                    botaoId: 'estornoBtn',
+                    subBotaoId: 'numeroSorteadoBtn'
+                };
+            }
+        }
+
+        const funcaoBotao = botoes[status];
+        if (funcaoBotao) {
+            const botao = funcaoBotao();
+            const qtdItensPorStatus = obterQtdItensPorStatus(status);
+            habilitarBotao(qtdItensPorStatus, botao.botaoId);
+            if (botao.subBotaoId) {
+                habilitarBotao(qtdItensPorStatus === 1 ? 1 : 0, botao.subBotaoId);
+            }
         }
     }
 
-    function obterCliente() {
-        const clienteId = document.getElementById("cliente").value;
-        return clienteId;
-    }
-
-    function obterVendedor() {
-        const vendedorId = document.getElementById("vendedor").value;
-        return vendedorId;
-    }
-
     function preencherItensRifa() {
+        function validarStatusPagamento() {
+            function pagamentoEfetuadoChecked() {
+                return document.getElementById('pagamentoEfetuado').checked;
+            }
+
+            return pagamentoEfetuadoChecked() ? statusPagamento.pagamentoRecebido : statusPagamento.aguardandoPagamento;
+        };
+
+        function obterCliente() {
+            const clienteId = document.getElementById("cliente").value;
+            return clienteId;
+        }
+
+        function obterVendedor() {
+            const vendedorId = document.getElementById("vendedor").value;
+            return vendedorId;
+        }
+
         const clienteId = obterCliente();
         const vendedorId = obterVendedor();
-        const itensRifa = numerosEscolhidos.map(numero => ({
+        const itensRifa = numerosEscolhidos.filter(x => x.status === 'disponivel').map(item => ({
             RifaId: @Model.Item1.RifaId,
-            NumeroEscolhido: numero,
+            NumeroEscolhido: item.numero,
+            StatusPagamento: validarStatusPagamento(),
             Cliente: {
                 ClienteId: clienteId
             },
@@ -204,21 +454,128 @@
         return itensRifa;
     }
 
-    function postReservarNumeros() {
-        $.ajax({
-            url: '/ItemRifa/ReservarNumeros',
-            type: 'POST',
-            data: {
-                __RequestVerificationToken: getToken(),
-                itensRifaViewModel: preencherItensRifa()
+    function preencherItensRifaEstorno() {
+        const itensRifa = numerosEscolhidos.filter(x => x.status === statusPagamento.pagamentoRecebido).map(item => ({
+            RifaId: @Model.Item1.RifaId,
+            itemRifaId: item.itemRifaId,
+            NumeroEscolhido: item.numero,
+            Cliente: {
+                ClienteId: item.clienteId
             },
-            success: function () {
-                alert("Sucesso.");
-                location.reload();
-            },
-            error: function (jqXHR, exception) {
-                alert('Erro.');
+            Vendedor: {
+                ClienteId: item.vendedorId
             }
-        });
+        }));
+
+        return itensRifa;
+    }
+
+    function preencherItemNumeroSorteado() {
+        const itemRifa = numerosEscolhidos.find(x => x.status === statusPagamento.pagamentoRecebido);
+        return {
+            RifaId: @Model.Item1.RifaId,
+            itemRifaId: itemRifa.itemRifaId,
+            Sorteado: 'Sim'
+        };
+    }
+
+    function preencherItensConfirmarPagamento() {
+        const itensRifa = numerosEscolhidos.filter(x => x.status === statusPagamento.aguardandoPagamento).map(item => ({
+            RifaId: @Model.Item1.RifaId,
+            itemRifaId: item.itemRifaId,
+            NumeroEscolhido: item.numero,
+            Cliente: {
+                ClienteId: item.clienteId
+            },
+            Vendedor: {
+                ClienteId: item.vendedorId
+            }
+        }));
+
+        return itensRifa;
+    }
+
+    function postReservarNumeros() {
+        fetch("/ItemRifa/Reservar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItensRifa())
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Reserva realizada!");
+                } else {
+                    alert("Erro ao realizar a reserva.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            })
+            .finally(() => location.reload());
+    }
+
+    function postEstornarNumeros() {
+        fetch("/ItemRifa/Estornar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItensRifaEstorno())
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Estorno realizado!");
+                } else {
+                    alert("Erro ao realizar o estorno.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            })
+            .finally(() => location.reload());
+    }
+
+    function postConfirmarPagamento() {
+        fetch("/ItemRifa/ConfirmarPagamento", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItensConfirmarPagamento())
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Pagamento confirmado!");
+                } else {
+                    alert("Erro ao confirmar o pagamento.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            })
+            .finally(() => location.reload());
+    }
+
+    function postMarcarNumeroSorteado() {
+        fetch("/ItemRifa/MarcarNumeroSorteado", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(preencherItemNumeroSorteado())
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    alert("Número sorteado definido!");
+                } else {
+                    alert("Erro ao definir o número sorteado.");
+                }
+            })
+            .catch(err => {
+                alert(err);
+            })
+            .finally(() => location.reload());
     }
 </script>
